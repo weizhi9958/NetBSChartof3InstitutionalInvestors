@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="Black">#000000</color>
+    <color name="AppBackground">#0F0F0F</color>
+
+    <color name="Column_OtherBg">#393939</color>
+    
+    <color name="ListViewTitle">#C4C4C4</color>
+    <color name="ListViewDivider">#3B3B3B</color>
+    <color name="ListViewEven">#2D2D2D</color>
+    <color name="ListViewOdd">#202020</color>
+    
+    <color name="Num_Negative">#25C439</color>
+    <color name="Num_Positive">#C02625</color>
+    
+</resources>
