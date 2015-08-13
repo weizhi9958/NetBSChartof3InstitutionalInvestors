@@ -12,5 +12,12 @@
     
     <color name="Num_Negative">#25C439</color>
     <color name="Num_Positive">#C02625</color>
+
+    <color name="Pillar_Top">#1B97FA</color>
+    <color name="Pillar_Bot">#0A4D7E</color>
+    
+    <color name="PaintRed">#FF0000</color>
+    <color name="PaintOrange">#FCA429</color>
+    <color name="PaintGreen">#00FF00</color>
     
 </resources>

@@ -31,7 +31,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SListFragment extends Fragment{
+public class ListFragment extends Fragment{
 
     String m_strXmlData;
     String m_strUrl;
@@ -44,7 +44,11 @@ public class SListFragment extends Fragment{
     ListView lvData;
 
 
-    public SListFragment (Context context,String url){
+    public ListFragment(){
+
+    }
+
+    public ListFragment(Context context, String url){
         this.context = context;
         this.m_strUrl = url;
     }
@@ -137,10 +141,10 @@ public class SListFragment extends Fragment{
             myAdapter = new SListAdapter(context, alDataList);
             lvData.setAdapter(myAdapter);
 
-            SGraphFragment myGraphFragment = new SGraphFragment(context, alDataList);
+            GraphFragment myGraphFragment = new GraphFragment(context, alDataList);
             FragmentManager frm = getFragmentManager();
             FragmentTransaction ft = frm.beginTransaction();
-            ft.add(R.id.llTop, myGraphFragment, "top").commit();
+            ft.replace(R.id.llTop, myGraphFragment).commit();
             frm.executePendingTransactions();
 
             pgdDialog.dismiss();

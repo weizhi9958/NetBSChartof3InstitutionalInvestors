@@ -15,15 +15,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class SGraphFragment extends Fragment{
+public class GraphFragment extends Fragment{
 
     SurfaceView sfv;
     SurfaceHolder sfh;
     Context context;
     ArrayList<HashMap<String, String>> alDataList;
 
+    public GraphFragment(){
 
-    public SGraphFragment(Context context,ArrayList alData){
+    }
+
+    public GraphFragment(Context context, ArrayList alData){
         this.context = context;
         this.alDataList = alData;
     }

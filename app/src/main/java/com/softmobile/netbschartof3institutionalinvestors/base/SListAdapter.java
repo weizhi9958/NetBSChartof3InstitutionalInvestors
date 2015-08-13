@@ -28,7 +28,7 @@ public class SListAdapter extends BaseAdapter{
     private double m_dbIt;
     private double m_dbSum;
 
-    public SListAdapter(Context context, ArrayList alData){
+    public SListAdapter(Context context, ArrayList<HashMap<String,String>> alData){
         this.context = context;
         this.layoutInflater = layoutInflater.from(context);
         this.alMyDataList   = alData;
@@ -86,10 +86,10 @@ public class SListAdapter extends BaseAdapter{
             viewHold = (SViewHold)convertView.getTag();
         }
 
-        m_dbQfii = getRound(Double.parseDouble(alMyDataList.get(position).get(MainActivity.TAG_QFII)));
-        m_dbBrk  = getRound(Double.parseDouble(alMyDataList.get(position).get(MainActivity.TAG_BRK)));
-        m_dbIt   = getRound(Double.parseDouble(alMyDataList.get(position).get(MainActivity.TAG_IT)));
-        m_dbSum  = getRound(m_dbQfii + m_dbBrk + m_dbIt);
+        m_dbQfii = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(MainActivity.TAG_QFII)));
+        m_dbBrk  = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(MainActivity.TAG_BRK)));
+        m_dbIt   = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(MainActivity.TAG_IT)));
+        m_dbSum  = STool.getRound(m_dbQfii + m_dbBrk + m_dbIt);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
@@ -103,42 +103,35 @@ public class SListAdapter extends BaseAdapter{
         }
 
 
-        viewHold.tvDate.setText(setDateZero(c.get(Calendar.MONTH) + 1) + "/" + setDateZero(c.get(Calendar.DAY_OF_MONTH)));
+        viewHold.tvDate.setText(STool.setDateZero(c.get(Calendar.MONTH) + 1) + "/" + STool.setDateZero(c.get(Calendar.DAY_OF_MONTH)));
         viewHold.tvQfiiNet.setText(String.valueOf(m_dbQfii));
         viewHold.tvBrkNet.setText(String.valueOf(m_dbBrk));
         viewHold.tvItNet.setText(String.valueOf(m_dbIt));
         viewHold.tvSum.setText(String.valueOf(m_dbSum));
         viewHold.llListBack.setBackgroundColor(iBackColor);
 
-        setTextColor(viewHold.tvQfiiNet);
-        setTextColor(viewHold.tvBrkNet);
-        setTextColor(viewHold.tvItNet);
-        setTextColor(viewHold.tvSum);
+        STool.setTextColor(context, viewHold.tvQfiiNet);
+        STool.setTextColor(context, viewHold.tvBrkNet);
+        STool.setTextColor(context, viewHold.tvItNet);
+        STool.setTextColor(context, viewHold.tvSum);
+
+        STool.addDayArray(STool.setDateZero(c.get(Calendar.DAY_OF_MONTH)));
+        STool.censorMaxNumber(m_dbQfii);
+        STool.censorMaxNumber(m_dbBrk);
+        STool.censorMaxNumber(m_dbIt);
+        STool.censorMaxNumber(m_dbSum);
+
+        STool.addAlQfii(m_dbQfii);
+        STool.addAlBrk(m_dbBrk);
+        STool.addAlIt(m_dbIt);
+        STool.addAlSum(m_dbSum);
+
 
 
         return convertView;
     }
 
 
-    private double getRound(double dbNum){
-        return Double.parseDouble(String.format("%.2f",dbNum));
-    }
 
-    private void setTextColor(TextView tv){
-        double tvText = Double.parseDouble(tv.getText().toString());
-        if(0 < tvText){
-            tv.setTextColor(context.getResources().getColor(R.color.Num_Positive));
-        } else {
-            tv.setTextColor(context.getResources().getColor(R.color.Num_Negative));
-        }
-    }
-
-    private String setDateZero(int iNum){
-        String strReturn = String.valueOf(iNum);
-        if(10 > iNum){
-            strReturn = 0 + strReturn;
-        }
-        return strReturn;
-    }
 
 }

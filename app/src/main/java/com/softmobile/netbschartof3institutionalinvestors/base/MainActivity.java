@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -30,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    SListFragment listTSEFragment;
-    SListFragment listOTCFragment;
+    ListFragment listTSEFragment;
+    ListFragment listOTCFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        listTSEFragment = new SListFragment(MainActivity.this, TAGURL_TSE);
-        listOTCFragment = new SListFragment(MainActivity.this, TAGURL_OTC);
+        listTSEFragment = new ListFragment(MainActivity.this, TAGURL_TSE);
+        listOTCFragment = new ListFragment(MainActivity.this, TAGURL_OTC);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.add(R.id.llBot, listTSEFragment, "bot");
         ft.commit();
@@ -66,12 +65,14 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.btnTSE:
+                    STool.clearAllData();
                     FragmentTransaction ftTSE = getFragmentManager().beginTransaction();
                     ftTSE.replace(R.id.llBot,listTSEFragment).commit();
                     bIsTSE = true;
                     changBtnColor();
                     break;
                 case R.id.btnOTC:
+                    STool.clearAllData();
                     FragmentTransaction ftOTC = getFragmentManager().beginTransaction();
                     ftOTC.replace(R.id.llBot,listOTCFragment).commit();
                     bIsTSE = false;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changBtnColor(){
-        if(true == bIsTSE){
+        if(false == bIsTSE){
             btnTSE.setAlpha(0.6f);
             btnOTC.setAlpha(1);
         }else{
