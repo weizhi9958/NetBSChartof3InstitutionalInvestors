@@ -5,18 +5,37 @@ import android.content.Context;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 public class STool {
 
+    public static final String TAGURL_TSE = "http://iwow.systex.com.tw/webService/ThreeCommOverBS_TSE.ashx";
+    public static final String TAGURL_OTC = "http://iwow.systex.com.tw/webService/ThreeCommOverBS_OTC.ashx";
+    public static final String TAG_URL    = "URL";
+    public static final String TAG_SYM    = "Symbol";
+    public static final String TAG_QFII   = "qfiiNetAmount";
+    public static final String TAG_BRK    = "brkNetAmount";
+    public static final String TAG_IT     = "itNetAmount";
+    public static final String TAG_DATE   = "date";
+
+    public static ArrayList<HashMap<String,String>> alDataList = new ArrayList<>();
     public static LinkedHashSet<String> s_lhsDayOfMonth = new LinkedHashSet<>();
     public static LinkedHashSet<Double> s_lhsSum = new LinkedHashSet<>();
     public static LinkedHashSet<Double> s_lhsQfii = new LinkedHashSet<>();
     public static LinkedHashSet<Double> s_lhsBrk = new LinkedHashSet<>();
     public static LinkedHashSet<Double> s_lhsIt = new LinkedHashSet<>();
     public static double s_dbMaxNumber = 0;
+
+    public static void setAlData(ArrayList alData){
+        alDataList = alData;
+    }
+
+    public static ArrayList getAlData(){
+        return alDataList;
+    }
 
     public static double getRound(double dbNum){
         return Double.parseDouble(String.format("%.2f",dbNum));

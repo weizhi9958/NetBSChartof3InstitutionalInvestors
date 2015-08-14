@@ -86,9 +86,9 @@ public class SListAdapter extends BaseAdapter{
             viewHold = (SViewHold)convertView.getTag();
         }
 
-        m_dbQfii = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(MainActivity.TAG_QFII)));
-        m_dbBrk  = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(MainActivity.TAG_BRK)));
-        m_dbIt   = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(MainActivity.TAG_IT)));
+        m_dbQfii = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(STool.TAG_QFII)));
+        m_dbBrk  = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(STool.TAG_BRK)));
+        m_dbIt   = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(STool.TAG_IT)));
         m_dbSum  = STool.getRound(m_dbQfii + m_dbBrk + m_dbIt);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
@@ -96,7 +96,7 @@ public class SListAdapter extends BaseAdapter{
         Calendar c = Calendar.getInstance();
         Date dt = null;
         try {
-            dt = sdf.parse(alMyDataList.get(position).get(MainActivity.TAG_DATE));
+            dt = sdf.parse(alMyDataList.get(position).get(STool.TAG_DATE));
             c.setTime(dt);
         } catch (ParseException e) {
             e.printStackTrace();

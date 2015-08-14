@@ -113,6 +113,9 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
         ArrayList<Double> alLeftNum = STool.getLeftNumber();
         p.setColor(Color.WHITE);
         for(int i = 0; i < alLeftNum.size(); i++){
+            if(0 == i){
+                canvas.drawText(getResources().getString(R.string.e), 0, (int)((m_iColumnHeight * (i + 0.5)) + m_iTextSize), p);
+            }
             canvas.drawText(String.valueOf(alLeftNum.get(i)), 0, (m_iColumnHeight * i) + m_iTextSize, p);
         }
 

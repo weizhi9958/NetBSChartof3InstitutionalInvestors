@@ -44,14 +44,6 @@ public class ListFragment extends Fragment{
     ListView lvData;
 
 
-    public ListFragment(){
-
-    }
-
-    public ListFragment(Context context, String url){
-        this.context = context;
-        this.m_strUrl = url;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,7 +57,10 @@ public class ListFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_lvlayout, container, false);
         lvData = (ListView) v.findViewById(R.id.lvData);
+        Bundle bundle = getArguments();
 
+        m_strUrl = bundle.getString("URL");
+        context = getActivity();
         new SGetData().execute();
         return v;
     }
@@ -100,24 +95,24 @@ public class ListFragment extends Fragment{
                     switch (iEt){
                         case XmlPullParser.START_TAG:
                             String strName = xpp.getName();
-                            if(strName.equals(MainActivity.TAG_SYM)){
+                            if(strName.equals(STool.TAG_SYM)){
                                 map = new HashMap<String, String>();
                             }
-                            if(strName.equals(MainActivity.TAG_QFII)){
+                            if(strName.equals(STool.TAG_QFII)){
                                 map.put(strName, xpp.nextText());
                             }
-                            if(strName.equals(MainActivity.TAG_BRK)){
+                            if(strName.equals(STool.TAG_BRK)){
                                 map.put(strName, xpp.nextText());
                             }
-                            if(strName.equals(MainActivity.TAG_IT)){
+                            if(strName.equals(STool.TAG_IT)){
                                 map.put(strName, xpp.nextText());
                             }
-                            if(strName.equals(MainActivity.TAG_DATE)) {
+                            if(strName.equals(STool.TAG_DATE)) {
                                 map.put(strName, xpp.nextText());
                             }
                             break;
                         case XmlPullParser.END_TAG:
-                            if(xpp.getName().equals(MainActivity.TAG_SYM)){
+                            if(xpp.getName().equals(STool.TAG_SYM)){
                                 alDataList.add(map);
                             }
                             break;
@@ -141,9 +136,10 @@ public class ListFragment extends Fragment{
             myAdapter = new SListAdapter(context, alDataList);
             lvData.setAdapter(myAdapter);
 
-            GraphFragment myGraphFragment = new GraphFragment(context, alDataList);
+            GraphFragment myGraphFragment = new GraphFragment();
             FragmentManager frm = getFragmentManager();
             FragmentTransaction ft = frm.beginTransaction();
+            STool.setAlData(alDataList);
             ft.replace(R.id.llTop, myGraphFragment).commit();
             frm.executePendingTransactions();
 

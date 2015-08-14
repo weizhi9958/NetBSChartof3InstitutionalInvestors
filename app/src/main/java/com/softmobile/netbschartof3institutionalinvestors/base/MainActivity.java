@@ -3,37 +3,34 @@ package com.softmobile.netbschartof3institutionalinvestors.base;
 import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static String TAGURL_TSE = "http://iwow.systex.com.tw/webService/ThreeCommOverBS_TSE.ashx";
-    public static String TAGURL_OTC    = "http://iwow.systex.com.tw/webService/ThreeCommOverBS_OTC.ashx";
-    public static String TAG_SYM  = "Symbol";
-    public static String TAG_QFII = "qfiiNetAmount";
-    public static String TAG_BRK  = "brkNetAmount";
-    public static String TAG_IT   = "itNetAmount";
-    public static String TAG_DATE = "date";
-
     boolean bIsTSE = true;
 
+    LinearLayout llOuter;
     LinearLayout llTop;
     LinearLayout llBot;
+    LinearLayout llBotOuter;
 
     Button btnTSE;
     Button btnOTC;
 
-
-
     ListFragment listTSEFragment;
     ListFragment listOTCFragment;
 
+    Bundle bundle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        savedInstanceState = null;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -41,20 +38,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView(){
-        llTop     = (LinearLayout) findViewById(R.id.llTop);
-        llBot     = (LinearLayout) findViewById(R.id.llBot);
-        btnTSE = (Button) findViewById(R.id.btnTSE);
-        btnOTC    = (Button) findViewById(R.id.btnOTC);
+        llOuter    = (LinearLayout) findViewById(R.id.llOuter);
+        llTop      = (LinearLayout) findViewById(R.id.llTop);
+        llBot      = (LinearLayout) findViewById(R.id.llBot);
+        llBotOuter = (LinearLayout) findViewById(R.id.llBotOuter);
+        btnTSE     = (Button) findViewById(R.id.btnTSE);
+        btnOTC     = (Button) findViewById(R.id.btnOTC);
 
         btnTSE.setOnClickListener(new SBtnOnClickListener());
         btnOTC.setOnClickListener(new SBtnOnClickListener());
 
+        Display display = getWindowManager().getDefaultDisplay();
+        if(display.getWidth() > display.getHeight()){
+            llOuter.setOrientation(LinearLayout.HORIZONTAL);
+            llBotOuter.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,1.0f));
+        }else{
+            llOuter.setOrientation(LinearLayout.VERTICAL);
+            llBotOuter.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,2.0f));
+        }
 
-
-        listTSEFragment = new ListFragment(MainActivity.this, TAGURL_TSE);
-        listOTCFragment = new ListFragment(MainActivity.this, TAGURL_OTC);
+        listTSEFragment = new ListFragment();
+        listOTCFragment = new ListFragment();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.add(R.id.llBot, listTSEFragment, "bot");
+        bundle = new Bundle();
+        bundle.putString(STool.TAG_URL,STool.TAGURL_TSE);
+        listTSEFragment.setArguments(bundle);
         ft.commit();
         changBtnColor();
     }
@@ -67,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.btnTSE:
                     STool.clearAllData();
                     FragmentTransaction ftTSE = getFragmentManager().beginTransaction();
+                    bundle.putString(STool.TAG_URL,STool.TAGURL_TSE);
+                    listTSEFragment.setArguments(bundle);
                     ftTSE.replace(R.id.llBot,listTSEFragment).commit();
                     bIsTSE = true;
                     changBtnColor();
@@ -74,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.btnOTC:
                     STool.clearAllData();
                     FragmentTransaction ftOTC = getFragmentManager().beginTransaction();
+                    bundle.putString(STool.TAG_URL,STool.TAGURL_OTC);
+                    listOTCFragment.setArguments(bundle);
                     ftOTC.replace(R.id.llBot,listOTCFragment).commit();
                     bIsTSE = false;
                     changBtnColor();
@@ -83,13 +96,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changBtnColor(){
-        if(false == bIsTSE){
-            btnTSE.setAlpha(0.6f);
-            btnOTC.setAlpha(1);
-        }else{
-            btnTSE.setAlpha(1);
-            btnOTC.setAlpha(0.6f);
-        }
+        btnTSE.setEnabled(!bIsTSE);
+        btnOTC.setEnabled(bIsTSE);
     }
 
     @Override

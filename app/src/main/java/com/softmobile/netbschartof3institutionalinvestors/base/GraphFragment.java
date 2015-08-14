@@ -22,14 +22,6 @@ public class GraphFragment extends Fragment{
     Context context;
     ArrayList<HashMap<String, String>> alDataList;
 
-    public GraphFragment(){
-
-    }
-
-    public GraphFragment(Context context, ArrayList alData){
-        this.context = context;
-        this.alDataList = alData;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,7 +34,8 @@ public class GraphFragment extends Fragment{
         View v = inflater.inflate(R.layout.fragment_graph, container, false);
         sfv = (SurfaceView) v.findViewById(R.id.sfvGraph);
         sfh = sfv.getHolder();
-
+        alDataList = STool.getAlData();
+        context = getActivity();
         new SDrawGraph(context, sfh, sfv, alDataList);
         return v;
     }
