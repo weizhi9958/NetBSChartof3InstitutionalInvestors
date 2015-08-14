@@ -64,6 +64,8 @@ public class SListAdapter extends BaseAdapter{
         convertView = layoutInflater.inflate(R.layout.listview_item, null);
         SViewHold viewHold = null;
         int iBackColor = -1;
+
+        //判斷奇偶列顏色及第一筆顏色
         if(position == 0){
             iBackColor = context.getResources().getColor(R.color.Black);
         }else if (position % 2 == 0) {
@@ -91,8 +93,8 @@ public class SListAdapter extends BaseAdapter{
         m_dbIt   = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(STool.TAG_IT)));
         m_dbSum  = STool.getRound(m_dbQfii + m_dbBrk + m_dbIt);
 
+        //轉成日期型態
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-
         Calendar c = Calendar.getInstance();
         Date dt = null;
         try {
@@ -102,7 +104,7 @@ public class SListAdapter extends BaseAdapter{
             e.printStackTrace();
         }
 
-
+        //設置每個TextView文字
         viewHold.tvDate.setText(STool.setDateZero(c.get(Calendar.MONTH) + 1) + "/" + STool.setDateZero(c.get(Calendar.DAY_OF_MONTH)));
         viewHold.tvQfiiNet.setText(String.valueOf(m_dbQfii));
         viewHold.tvBrkNet.setText(String.valueOf(m_dbBrk));
@@ -110,23 +112,24 @@ public class SListAdapter extends BaseAdapter{
         viewHold.tvSum.setText(String.valueOf(m_dbSum));
         viewHold.llListBack.setBackgroundColor(iBackColor);
 
+        //依正負值判斷TextView顏色
         STool.setTextColor(context, viewHold.tvQfiiNet);
         STool.setTextColor(context, viewHold.tvBrkNet);
         STool.setTextColor(context, viewHold.tvItNet);
         STool.setTextColor(context, viewHold.tvSum);
 
+        //依類型依序存入各自ArrayList
         STool.addDayArray(STool.setDateZero(c.get(Calendar.DAY_OF_MONTH)));
-        STool.censorMaxNumber(m_dbQfii);
-        STool.censorMaxNumber(m_dbBrk);
-        STool.censorMaxNumber(m_dbIt);
-        STool.censorMaxNumber(m_dbSum);
-
         STool.addAlQfii(m_dbQfii);
         STool.addAlBrk(m_dbBrk);
         STool.addAlIt(m_dbIt);
         STool.addAlSum(m_dbSum);
 
-
+        //每個數字去判斷是否最大值
+        STool.censorMaxNumber(m_dbQfii);
+        STool.censorMaxNumber(m_dbBrk);
+        STool.censorMaxNumber(m_dbIt);
+        STool.censorMaxNumber(m_dbSum);
 
         return convertView;
     }

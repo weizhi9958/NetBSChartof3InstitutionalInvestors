@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.add(R.id.llBot, listTSEFragment, "bot");
         bundle = new Bundle();
-        bundle.putString(STool.TAG_URL,STool.TAGURL_TSE);
+        bundle.putString(STool.TAG_URL, STool.TAGURL_TSE);
         listTSEFragment.setArguments(bundle);
         ft.commit();
         changBtnColor();

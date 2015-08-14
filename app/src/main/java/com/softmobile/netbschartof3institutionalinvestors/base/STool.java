@@ -58,10 +58,6 @@ public class STool {
         return strReturn;
     }
 
-    public static void addDayArray(String strDay){
-        s_lhsDayOfMonth.add(strDay);
-    }
-
     public static LinkedList<String> changeHsFirstLast(LinkedHashSet lhsData){
         Iterator<String> iter = lhsData.iterator();
         LinkedList<String> lklDay = new LinkedList<>();
@@ -91,8 +87,20 @@ public class STool {
         return alLeftNum;
     }
 
-    public static void addAlSum(double dbNum){
-        s_lhsSum.add(dbNum);
+    public static double getPillarLength(double dbNum){
+        return (dbNum / s_dbMaxNumber) * 4;
+    }
+
+    public static void clearAllData(){
+        s_dbMaxNumber = 0;
+        s_lhsSum.clear();
+        s_lhsQfii.clear();
+        s_lhsBrk.clear();
+        s_lhsIt.clear();
+    }
+
+    public static void addDayArray(String strDay){
+        s_lhsDayOfMonth.add(strDay);
     }
 
     public static void addAlQfii(double dbNum){
@@ -106,17 +114,11 @@ public class STool {
     public static void addAlIt(double dbNum){
         s_lhsIt.add(dbNum);
     }
-    public static double getPillarLength(double dbNum){
-        return (dbNum / s_dbMaxNumber) * 4;
 
+    public static void addAlSum(double dbNum){
+        s_lhsSum.add(dbNum);
     }
 
-    public static void clearAllData(){
-        s_dbMaxNumber = 0;
-        s_lhsSum.clear();
-        s_lhsQfii.clear();
-        s_lhsBrk.clear();
-        s_lhsIt.clear();
-    }
+
 
 }

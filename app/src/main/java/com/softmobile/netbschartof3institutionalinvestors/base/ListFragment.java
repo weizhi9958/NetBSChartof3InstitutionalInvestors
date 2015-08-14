@@ -55,17 +55,18 @@ public class ListFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_lvlayout, container, false);
-        lvData = (ListView) v.findViewById(R.id.lvData);
-        Bundle bundle = getArguments();
+        View view = inflater.inflate(R.layout.fragment_lvlayout, container, false);
+        lvData = (ListView) view.findViewById(R.id.lvData);
 
+        Bundle bundle = getArguments();
         m_strUrl = bundle.getString("URL");
+
         context = getActivity();
-        new SGetData().execute();
-        return v;
+        new SGetData().execute(m_strUrl);
+        return view;
     }
 
-    class SGetData extends AsyncTask<String, String, String> {
+    class SGetData extends AsyncTask<String, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -76,9 +77,9 @@ public class ListFragment extends Fragment{
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Void doInBackground(String... params) {
             try {
-                URI uri = new URI(m_strUrl);
+                URI uri = new URI(params[0]);
                 HttpClient hc = new DefaultHttpClient();
                 HttpGet hg = new HttpGet();
 
@@ -91,10 +92,11 @@ public class ListFragment extends Fragment{
                 xpp.setInput(inputs, "utf-8");
                 int iEt = xpp.getEventType();
                 HashMap<String, String> map = null;
+                String strName = null;
                 while (iEt != XmlPullParser.END_DOCUMENT){
                     switch (iEt){
                         case XmlPullParser.START_TAG:
-                            String strName = xpp.getName();
+                            strName = xpp.getName();
                             if(strName.equals(STool.TAG_SYM)){
                                 map = new HashMap<String, String>();
                             }
@@ -130,8 +132,9 @@ public class ListFragment extends Fragment{
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+        protected void onPostExecute(Void vd) {
+
+            STool.setAlData(alDataList);
 
             myAdapter = new SListAdapter(context, alDataList);
             lvData.setAdapter(myAdapter);
@@ -139,7 +142,6 @@ public class ListFragment extends Fragment{
             GraphFragment myGraphFragment = new GraphFragment();
             FragmentManager frm = getFragmentManager();
             FragmentTransaction ft = frm.beginTransaction();
-            STool.setAlData(alDataList);
             ft.replace(R.id.llTop, myGraphFragment).commit();
             frm.executePendingTransactions();
 

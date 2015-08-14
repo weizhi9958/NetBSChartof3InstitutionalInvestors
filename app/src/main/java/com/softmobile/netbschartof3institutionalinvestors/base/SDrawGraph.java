@@ -6,11 +6,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.ListIterator;
 
 
@@ -40,24 +41,22 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
     SurfaceHolder sfholder;
 
     Canvas canvas;
-    ArrayList<HashMap<String, String>> alDataList;
 
-    public SDrawGraph(Context context, SurfaceHolder sfh, SurfaceView sfv,ArrayList alData) {
+    public SDrawGraph(Context context, SurfaceHolder sfh, SurfaceView sfv) {
         super(context);
         sfholder = sfh;
         sfView = sfv;
-        alDataList = alData;
         sfholder.addCallback(this);
+
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
 
         canvas = sfholder.lockCanvas();
-
         m_iColumnSpace = 10;
         //柱子寬度 = View總寬度 — ( 柱子間距 * 總數量 ) / ( 總數量 + 1 )
-        m_iColumnWeight = (int)((sfView.getWidth() - (m_iColumnSpace * alDataList.size())) / (alDataList.size() + 1));
+        m_iColumnWeight = (int)((sfView.getWidth() - (m_iColumnSpace * STool.alDataList.size())) / (STool.alDataList.size() + 1));
         m_iTextSize = m_iColumnWeight / 3;
         m_iColumnHeight = (int)((sfView.getHeight() - m_iTextSize) / 10);
         m_iNowX = 0;
@@ -114,7 +113,7 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
         p.setColor(Color.WHITE);
         for(int i = 0; i < alLeftNum.size(); i++){
             if(0 == i){
-                canvas.drawText(getResources().getString(R.string.e), 0, (int)((m_iColumnHeight * (i + 0.5)) + m_iTextSize), p);
+                canvas.drawText(getResources().getString(R.string.e), m_iColumnWeight * 0.5f, (int)((m_iColumnHeight * (i + 0.5)) + m_iTextSize), p);
             }
             canvas.drawText(String.valueOf(alLeftNum.get(i)), 0, (m_iColumnHeight * i) + m_iTextSize, p);
         }
@@ -151,4 +150,5 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceDestroyed(SurfaceHolder holder) {
 
     }
+
 }
