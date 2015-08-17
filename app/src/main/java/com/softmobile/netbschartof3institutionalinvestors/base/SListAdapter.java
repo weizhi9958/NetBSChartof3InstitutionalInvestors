@@ -13,30 +13,31 @@ import android.widget.TextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 
 public class SListAdapter extends BaseAdapter{
 
     private Context context;
     private LayoutInflater layoutInflater = null;
-    private ArrayList<HashMap<String, String>> alMyDataList;
     private double m_dbQfii;
     private double m_dbBrk;
     private double m_dbIt;
     private double m_dbSum;
+    private SimpleDateFormat simpleDateFormat;
+    Calendar calendar;
+    Date date = null;
 
-    public SListAdapter(Context context, ArrayList<HashMap<String,String>> alData){
+    public SListAdapter(Context context){
         this.context = context;
         this.layoutInflater = layoutInflater.from(context);
-        this.alMyDataList   = alData;
+        simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        calendar = Calendar.getInstance();
     }
 
     @Override
     public int getCount() {
-        return alMyDataList.size();
+        return STool.alDataList.size();
     }
 
     @Override
@@ -49,7 +50,7 @@ public class SListAdapter extends BaseAdapter{
         return position;
     }
 
-    private class SViewHold
+    private static class SViewHold
     {
         LinearLayout llListBack;
         TextView tvDate;
@@ -61,21 +62,12 @@ public class SListAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        convertView = layoutInflater.inflate(R.layout.listview_item, null);
         SViewHold viewHold = null;
         int iBackColor = -1;
 
-        //判斷奇偶列顏色及第一筆顏色
-        if(position == 0){
-            iBackColor = context.getResources().getColor(R.color.Black);
-        }else if (position % 2 == 0) {
-            iBackColor = context.getResources().getColor(R.color.ListViewOdd);
-        }else{
-            iBackColor = context.getResources().getColor(R.color.ListViewEven);
-        }
-
-        if(viewHold == null){
+        if(convertView == null){
             viewHold = new SViewHold();
+            convertView = layoutInflater.inflate(R.layout.listview_item, null);
             viewHold.llListBack = (LinearLayout) convertView.findViewById(R.id.llListBack);
             viewHold.tvDate     = (TextView) convertView.findViewById(R.id.tvDate);
             viewHold.tvQfiiNet  = (TextView) convertView.findViewById(R.id.tvQfiiNet);
@@ -88,24 +80,31 @@ public class SListAdapter extends BaseAdapter{
             viewHold = (SViewHold)convertView.getTag();
         }
 
-        m_dbQfii = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(STool.TAG_QFII)));
-        m_dbBrk  = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(STool.TAG_BRK)));
-        m_dbIt   = STool.getRound(Double.parseDouble(alMyDataList.get(position).get(STool.TAG_IT)));
+        //判斷奇偶列顏色及第一筆顏色
+        if(position == 0){
+            iBackColor = context.getResources().getColor(R.color.Black);
+        }else if (position % 2 == 0) {
+            iBackColor = context.getResources().getColor(R.color.ListViewOdd);
+        }else{
+            iBackColor = context.getResources().getColor(R.color.ListViewEven);
+        }
+
+        //四捨五入
+        m_dbQfii = STool.getRound(Double.parseDouble(STool.alDataList.get(position).get(STool.TAG_QFII)));
+        m_dbBrk  = STool.getRound(Double.parseDouble(STool.alDataList.get(position).get(STool.TAG_BRK)));
+        m_dbIt   = STool.getRound(Double.parseDouble(STool.alDataList.get(position).get(STool.TAG_IT)));
         m_dbSum  = STool.getRound(m_dbQfii + m_dbBrk + m_dbIt);
 
         //轉成日期型態
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        Calendar c = Calendar.getInstance();
-        Date dt = null;
         try {
-            dt = sdf.parse(alMyDataList.get(position).get(STool.TAG_DATE));
-            c.setTime(dt);
+            date = simpleDateFormat.parse(STool.alDataList.get(position).get(STool.TAG_DATE));
+            calendar.setTime(date);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         //設置每個TextView文字
-        viewHold.tvDate.setText(STool.setDateZero(c.get(Calendar.MONTH) + 1) + "/" + STool.setDateZero(c.get(Calendar.DAY_OF_MONTH)));
+        viewHold.tvDate.setText(STool.setDateZero(calendar.get(Calendar.MONTH) + 1) + "/" + STool.setDateZero(calendar.get(Calendar.DAY_OF_MONTH)));
         viewHold.tvQfiiNet.setText(String.valueOf(m_dbQfii));
         viewHold.tvBrkNet.setText(String.valueOf(m_dbBrk));
         viewHold.tvItNet.setText(String.valueOf(m_dbIt));
@@ -119,7 +118,7 @@ public class SListAdapter extends BaseAdapter{
         STool.setTextColor(context, viewHold.tvSum);
 
         //依類型依序存入各自ArrayList
-        STool.addDayArray(STool.setDateZero(c.get(Calendar.DAY_OF_MONTH)));
+        STool.addDayArray(STool.setDateZero(calendar.get(Calendar.DAY_OF_MONTH)));
         STool.addAlQfii(m_dbQfii);
         STool.addAlBrk(m_dbBrk);
         STool.addAlIt(m_dbIt);
@@ -133,8 +132,5 @@ public class SListAdapter extends BaseAdapter{
 
         return convertView;
     }
-
-
-
 
 }

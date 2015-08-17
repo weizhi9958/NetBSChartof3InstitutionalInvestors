@@ -33,119 +33,30 @@ import java.util.HashMap;
 
 public class ListFragment extends Fragment{
 
-    String m_strXmlData;
-    String m_strUrl;
-
     Context context;
-    ProgressDialog pgdDialog;
 
     SListAdapter myAdapter;
-    ArrayList<HashMap<String, String>> alDataList;
     ListView lvData;
-
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        alDataList = new ArrayList<HashMap<String, String>>();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_lvlayout, container, false);
+
         lvData = (ListView) view.findViewById(R.id.lvData);
 
-        Bundle bundle = getArguments();
-        m_strUrl = bundle.getString("URL");
-
         context = getActivity();
-        new SGetData().execute(m_strUrl);
+
+        myAdapter = new SListAdapter(context);
+        lvData.setAdapter(myAdapter);
+
         return view;
     }
 
-    class SGetData extends AsyncTask<String, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pgdDialog = new ProgressDialog(context);
-            pgdDialog.setCancelable(false);
-            pgdDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(String... params) {
-            try {
-                URI uri = new URI(params[0]);
-                HttpClient hc = new DefaultHttpClient();
-                HttpGet hg = new HttpGet();
-
-                hg.setURI(uri);
-                HttpResponse res = hc.execute(hg);
-                m_strXmlData = EntityUtils.toString(res.getEntity());
-
-                XmlPullParser xpp = Xml.newPullParser();
-                InputStream inputs = new ByteArrayInputStream(m_strXmlData.getBytes());
-                xpp.setInput(inputs, "utf-8");
-                int iEt = xpp.getEventType();
-                HashMap<String, String> map = null;
-                String strName = null;
-                while (iEt != XmlPullParser.END_DOCUMENT){
-                    switch (iEt){
-                        case XmlPullParser.START_TAG:
-                            strName = xpp.getName();
-                            if(strName.equals(STool.TAG_SYM)){
-                                map = new HashMap<String, String>();
-                            }
-                            if(strName.equals(STool.TAG_QFII)){
-                                map.put(strName, xpp.nextText());
-                            }
-                            if(strName.equals(STool.TAG_BRK)){
-                                map.put(strName, xpp.nextText());
-                            }
-                            if(strName.equals(STool.TAG_IT)){
-                                map.put(strName, xpp.nextText());
-                            }
-                            if(strName.equals(STool.TAG_DATE)) {
-                                map.put(strName, xpp.nextText());
-                            }
-                            break;
-                        case XmlPullParser.END_TAG:
-                            if(xpp.getName().equals(STool.TAG_SYM)){
-                                alDataList.add(map);
-                            }
-                            break;
-                    }
-                    iEt = xpp.next();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void vd) {
-
-            STool.setAlData(alDataList);
-
-            myAdapter = new SListAdapter(context, alDataList);
-            lvData.setAdapter(myAdapter);
-
-            GraphFragment myGraphFragment = new GraphFragment();
-            FragmentManager frm = getFragmentManager();
-            FragmentTransaction ft = frm.beginTransaction();
-            ft.replace(R.id.llTop, myGraphFragment).commit();
-            frm.executePendingTransactions();
-
-            pgdDialog.dismiss();
-        }
-    }
 }

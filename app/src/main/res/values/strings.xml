@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">曾偉誌</string>
+    <string name="app_name">NetBSChartof3InstitutionalInvestors</string>
+    <string name="author_name">曾偉誌</string>
 
     <string name="date">日期</string>
     <string name="qfii">外資</string>

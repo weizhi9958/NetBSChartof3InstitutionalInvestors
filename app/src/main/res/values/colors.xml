@@ -19,5 +19,7 @@
     <color name="PaintRed">#FF0000</color>
     <color name="PaintOrange">#FCA429</color>
     <color name="PaintGreen">#00FF00</color>
+
+    <color name="ColumnTouch">#FFDA03</color>
     
 </resources>

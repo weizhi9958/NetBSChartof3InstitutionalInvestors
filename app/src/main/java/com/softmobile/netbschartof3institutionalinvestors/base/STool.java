@@ -28,25 +28,28 @@ public class STool {
     public static LinkedHashSet<Double> s_lhsBrk = new LinkedHashSet<>();
     public static LinkedHashSet<Double> s_lhsIt = new LinkedHashSet<>();
     public static double s_dbMaxNumber = 0;
+    public static int s_iNowTouchX = -1;
 
-    public static void setAlData(ArrayList alData){
-        alDataList = alData;
-    }
-
-    public static ArrayList getAlData(){
-        return alDataList;
-    }
 
     public static double getRound(double dbNum){
         return Double.parseDouble(String.format("%.2f",dbNum));
     }
 
     public static void setTextColor(Context context, TextView tv){
-        double tvText = Double.parseDouble(tv.getText().toString());
-        if(0 < tvText){
+        double dbText = Double.parseDouble(tv.getText().toString());
+        if(0 < dbText){
             tv.setTextColor(context.getResources().getColor(R.color.Num_Positive));
         } else {
             tv.setTextColor(context.getResources().getColor(R.color.Num_Negative));
+        }
+    }
+
+    public static int getTextColor(Context context, String strNum){
+        double dbText = Double.parseDouble(strNum);
+        if(0 < dbText){
+            return context.getResources().getColor(R.color.Num_Positive);
+        } else {
+            return context.getResources().getColor(R.color.Num_Negative);
         }
     }
 
@@ -93,10 +96,13 @@ public class STool {
 
     public static void clearAllData(){
         s_dbMaxNumber = 0;
+        alDataList.clear();
+        s_lhsDayOfMonth.clear();
         s_lhsSum.clear();
         s_lhsQfii.clear();
         s_lhsBrk.clear();
         s_lhsIt.clear();
+        s_iNowTouchX = -1;
     }
 
     public static void addDayArray(String strDay){
@@ -119,6 +125,8 @@ public class STool {
         s_lhsSum.add(dbNum);
     }
 
-
+    public static void setNowTouchX(int iX){
+        s_iNowTouchX = iX;
+    }
 
 }
