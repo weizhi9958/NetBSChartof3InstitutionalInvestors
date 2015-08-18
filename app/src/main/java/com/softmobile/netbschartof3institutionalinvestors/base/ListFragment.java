@@ -9,11 +9,15 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -31,9 +35,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ListFragment extends Fragment{
-
-    Context context;
+public class ListFragment extends Fragment {
 
     SListAdapter myAdapter;
     ListView lvData;
@@ -41,7 +43,6 @@ public class ListFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Nullable
@@ -51,12 +52,20 @@ public class ListFragment extends Fragment{
 
         lvData = (ListView) view.findViewById(R.id.lvData);
 
-        context = getActivity();
+        myAdapter = new SListAdapter(getActivity());
+        STool.sla = myAdapter;
 
-        myAdapter = new SListAdapter(context);
         lvData.setAdapter(myAdapter);
-
+        lvData.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                myAdapter.changeClikcColor(position);
+                STool.s_iNowItemPos = position;
+                STool.sdg.MyDraw();
+            }
+        });
         return view;
     }
+
 
 }

@@ -33,7 +33,7 @@ public class GraphFragment extends Fragment{
 
 
         final SDrawGraph sdg = new SDrawGraph(getActivity(), sfh, sfv);
-
+        STool.sdg = sdg;
         sfv.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

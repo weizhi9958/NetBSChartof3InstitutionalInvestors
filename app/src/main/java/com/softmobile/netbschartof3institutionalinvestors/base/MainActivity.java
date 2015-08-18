@@ -34,12 +34,12 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    boolean bIsTSE = true;
+    boolean m_bIsTSE = true; //目前是哪個按鈕
 
-    LinearLayout llOuter;
-    LinearLayout llTop;
-    LinearLayout llBot;
-    LinearLayout llBotOuter;
+    LinearLayout llOuter; //最外層layout
+    LinearLayout llTop; //SurfaceView的layout
+    LinearLayout llBotOuter; //下層最外層
+    LinearLayout llBot; //ListView的layout
 
     Button btnTSE;
     Button btnOTC;
@@ -57,18 +57,25 @@ public class MainActivity extends AppCompatActivity {
         initView();
     }
 
-
+    //螢幕翻轉時
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+
         Display display = getWindowManager().getDefaultDisplay();
+
+        //判斷直向橫向
         if(display.getWidth() > display.getHeight()){
+            //最外層layout改為水平
             llOuter.setOrientation(LinearLayout.HORIZONTAL);
-            llBotOuter.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,1.0f));
+            //比重設為1.0f
+            llBotOuter.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1.0f));
         }else{
             llOuter.setOrientation(LinearLayout.VERTICAL);
-            llBotOuter.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,2.0f));
+            llBotOuter.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 2.0f));
         }
+
+        //重畫SurfaceView
         FragmentManager frm = getFragmentManager();
         FragmentTransaction ft = frm.beginTransaction();
         ft.replace(R.id.llTop, new GraphFragment());
@@ -90,9 +97,11 @@ public class MainActivity extends AppCompatActivity {
         listFragment  = new ListFragment();
         graphFragment = new GraphFragment();
 
-        new SGetData(new ListFragment(),new GraphFragment()).execute(STool.TAGURL_TSE);
-
+        STool.clearAllData();
         changBtnColor();
+
+        //撈資料
+        new SGetData(new ListFragment(),new GraphFragment()).execute(STool.TAGURL_TSE);
     }
 
     class SBtnOnClickListener implements View.OnClickListener{
@@ -102,27 +111,23 @@ public class MainActivity extends AppCompatActivity {
             switch (v.getId()){
                 case R.id.btnTSE:
                     STool.clearAllData();
-                    bIsTSE = true;
+                    m_bIsTSE = true;
                     changBtnColor();
-
                     new SGetData(new ListFragment(),new GraphFragment()).execute(STool.TAGURL_TSE);
-
                     break;
                 case R.id.btnOTC:
                     STool.clearAllData();
-                    bIsTSE = false;
+                    m_bIsTSE = false;
                     changBtnColor();
-
                     new SGetData(new ListFragment(),new GraphFragment()).execute(STool.TAGURL_OTC);
-
                     break;
             }
         }
     }
 
     private void changBtnColor(){
-        btnTSE.setEnabled(!bIsTSE);
-        btnOTC.setEnabled(bIsTSE);
+        btnTSE.setEnabled(!m_bIsTSE);
+        btnOTC.setEnabled(m_bIsTSE);
     }
 
 
@@ -165,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                     switch (iEt){
                         case XmlPullParser.START_TAG:
                             strName = xpp.getName();
-                            if(strName.equals(STool.TAG_SYM)){
+                            if(strName.equals(STool.TAG_SUM)){
                                 map = new HashMap<String, String>();
                             }
                             if(strName.equals(STool.TAG_QFII)){
@@ -182,8 +187,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                             break;
                         case XmlPullParser.END_TAG:
-                            if(xpp.getName().equals(STool.TAG_SYM)){
-                                STool.alDataList.add(map);
+                            if(xpp.getName().equals(STool.TAG_SUM)){
+                                STool.s_alDataList.add(map);
                             }
                             break;
                     }
@@ -201,7 +206,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void vd) {
+            STool.addAllArray(); //產生之後必要資料
 
+            //替換上下兩個Fragment
             FragmentManager frm = getFragmentManager();
             FragmentTransaction ft = frm.beginTransaction();
             ft.replace(R.id.llBot, listFragment);

@@ -2,7 +2,6 @@ package com.softmobile.netbschartof3institutionalinvestors.base;
 
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,31 +17,23 @@ import java.util.Date;
 
 public class SListAdapter extends BaseAdapter{
 
+    private int m_iTouchPos = -1;
     private Context context;
     private LayoutInflater layoutInflater = null;
-    private double m_dbQfii;
-    private double m_dbBrk;
-    private double m_dbIt;
-    private double m_dbSum;
-    private SimpleDateFormat simpleDateFormat;
-    Calendar calendar;
-    Date date = null;
 
     public SListAdapter(Context context){
         this.context = context;
         this.layoutInflater = layoutInflater.from(context);
-        simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        calendar = Calendar.getInstance();
     }
 
     @Override
     public int getCount() {
-        return STool.alDataList.size();
+        return STool.s_alDataList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return position;
+        return STool.s_alDataList.get(position);
     }
 
     @Override
@@ -65,9 +56,9 @@ public class SListAdapter extends BaseAdapter{
         SViewHold viewHold = null;
         int iBackColor = -1;
 
-        if(convertView == null){
+        if(null == convertView){
             viewHold = new SViewHold();
-            convertView = layoutInflater.inflate(R.layout.listview_item, null);
+            convertView = layoutInflater.inflate(R.layout.listview_item, parent, false);
             viewHold.llListBack = (LinearLayout) convertView.findViewById(R.id.llListBack);
             viewHold.tvDate     = (TextView) convertView.findViewById(R.id.tvDate);
             viewHold.tvQfiiNet  = (TextView) convertView.findViewById(R.id.tvQfiiNet);
@@ -89,26 +80,12 @@ public class SListAdapter extends BaseAdapter{
             iBackColor = context.getResources().getColor(R.color.ListViewEven);
         }
 
-        //四捨五入
-        m_dbQfii = STool.getRound(Double.parseDouble(STool.alDataList.get(position).get(STool.TAG_QFII)));
-        m_dbBrk  = STool.getRound(Double.parseDouble(STool.alDataList.get(position).get(STool.TAG_BRK)));
-        m_dbIt   = STool.getRound(Double.parseDouble(STool.alDataList.get(position).get(STool.TAG_IT)));
-        m_dbSum  = STool.getRound(m_dbQfii + m_dbBrk + m_dbIt);
-
-        //轉成日期型態
-        try {
-            date = simpleDateFormat.parse(STool.alDataList.get(position).get(STool.TAG_DATE));
-            calendar.setTime(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
         //設置每個TextView文字
-        viewHold.tvDate.setText(STool.setDateZero(calendar.get(Calendar.MONTH) + 1) + "/" + STool.setDateZero(calendar.get(Calendar.DAY_OF_MONTH)));
-        viewHold.tvQfiiNet.setText(String.valueOf(m_dbQfii));
-        viewHold.tvBrkNet.setText(String.valueOf(m_dbBrk));
-        viewHold.tvItNet.setText(String.valueOf(m_dbIt));
-        viewHold.tvSum.setText(String.valueOf(m_dbSum));
+        viewHold.tvDate.setText(STool.getMonth(position) + "/" + STool.getDayOf(position));
+        viewHold.tvQfiiNet.setText(STool.getQfiiOf(position));
+        viewHold.tvBrkNet.setText(STool.getBrkOf(position));
+        viewHold.tvItNet.setText(STool.getItOf(position));
+        viewHold.tvSum.setText(STool.getSumOf(position));
         viewHold.llListBack.setBackgroundColor(iBackColor);
 
         //依正負值判斷TextView顏色
@@ -117,20 +94,18 @@ public class SListAdapter extends BaseAdapter{
         STool.setTextColor(context, viewHold.tvItNet);
         STool.setTextColor(context, viewHold.tvSum);
 
-        //依類型依序存入各自ArrayList
-        STool.addDayArray(STool.setDateZero(calendar.get(Calendar.DAY_OF_MONTH)));
-        STool.addAlQfii(m_dbQfii);
-        STool.addAlBrk(m_dbBrk);
-        STool.addAlIt(m_dbIt);
-        STool.addAlSum(m_dbSum);
-
-        //每個數字去判斷是否最大值
-        STool.censorMaxNumber(m_dbQfii);
-        STool.censorMaxNumber(m_dbBrk);
-        STool.censorMaxNumber(m_dbIt);
-        STool.censorMaxNumber(m_dbSum);
+        //目前點擊改顏色
+        if(m_iTouchPos == position){
+            viewHold.llListBack.setBackgroundColor(context.getResources().getColor(R.color.ColumnTouch));
+        }
 
         return convertView;
+    }
+
+    //修改點擊顏色
+    public void changeClikcColor(int iPos){
+        m_iTouchPos = iPos;
+        notifyDataSetChanged();
     }
 
 }
