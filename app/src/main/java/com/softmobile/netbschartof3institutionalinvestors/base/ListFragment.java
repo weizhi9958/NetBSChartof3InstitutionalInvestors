@@ -40,14 +40,10 @@ public class ListFragment extends Fragment {
     SListAdapter myAdapter;
     ListView lvData;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_lvlayout, container, false);
 
         lvData = (ListView) view.findViewById(R.id.lvData);

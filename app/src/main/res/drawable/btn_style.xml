@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 按钮按下时的样式 -->
+    <item android:state_pressed="true">
+        <shape>
+            <!-- solid：背景填充颜色 -->
+            <solid android:color="#606060" />
+             <!-- corners：圆角 -->
+            <corners android:radius="5dip" />
+             <!-- padding：内边距 -->
+            <padding android:bottom="10dp" android:left="10dp" android:right="10dp" android:top="10dp" />
+        </shape>
+    </item>
+
+    <!-- 按钮禁用时的样式 -->
+    <item android:state_enabled="false">
+        <shape>
+            <!-- solid：背景填充颜色 -->
+            <solid android:color="#808080" />
+            <!-- corners：圆角 -->
+            <corners android:radius="5dip" />
+            <!-- padding：内边距 -->
+            <padding android:bottom="10dp" android:left="10dp" android:right="10dp" android:top="10dp" />
+        </shape>
+    </item>
+
+    <!-- 按钮正常时的样式 -->
+    <item>
+        <!-- shape：按钮形状 -->
+        <shape>
+            <!-- solid：背景填充颜色 -->
+            <solid android:color="#404040" />
+            <!-- corners：圆角 -->
+            <corners android:radius="5dip" />
+            <!-- padding：内边距 -->
+            <padding android:bottom="10dp" android:left="10dp" android:right="10dp" android:top="10dp" />
+        </shape>
+    </item>
+</selector>

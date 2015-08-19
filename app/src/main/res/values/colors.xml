@@ -3,6 +3,8 @@
     <color name="Black">#000000</color>
     <color name="AppBackground">#0F0F0F</color>
 
+    <color name="BtnTrue">#AAAAAA</color>
+
     <color name="Column_OtherBg">#393939</color>
     
     <color name="ListViewTitle">#C4C4C4</color>

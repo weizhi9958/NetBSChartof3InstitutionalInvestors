@@ -8,5 +8,8 @@
     <string name="it">自營</string>
     <string name="sum">合計</string>
 
+    <string name="TSE">上市</string>
+    <string name="OTC">上櫃</string>
+
     <string name="e">億</string>
 </resources>

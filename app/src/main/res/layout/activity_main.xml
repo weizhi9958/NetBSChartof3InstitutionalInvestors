@@ -14,15 +14,21 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="上市"
+            android:text="@string/TSE"
             android:id="@+id/btnTSE"
-            android:alpha="1" />
+            android:alpha="1"
+            android:background="@drawable/btn_style"
+            android:layout_margin="5dp"
+            android:textColor="@drawable/btn_textcolor" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="上櫃"
-            android:id="@+id/btnOTC" />
+            android:text="@string/OTC"
+            android:id="@+id/btnOTC"
+            android:background="@drawable/btn_style"
+            android:layout_margin="5dp"
+            android:textColor="@drawable/btn_textcolor" />
 
     </LinearLayout>
 

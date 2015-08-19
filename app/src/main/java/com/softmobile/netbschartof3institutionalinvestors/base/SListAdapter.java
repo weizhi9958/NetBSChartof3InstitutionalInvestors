@@ -33,7 +33,7 @@ public class SListAdapter extends BaseAdapter{
 
     @Override
     public Object getItem(int position) {
-        return STool.s_alDataList.get(position);
+        return null;
     }
 
     @Override
@@ -72,9 +72,9 @@ public class SListAdapter extends BaseAdapter{
         }
 
         //判斷奇偶列顏色及第一筆顏色
-        if(position == 0){
+        if(0 == position){
             iBackColor = context.getResources().getColor(R.color.Black);
-        }else if (position % 2 == 0) {
+        }else if (0 == position % 2) {
             iBackColor = context.getResources().getColor(R.color.ListViewOdd);
         }else{
             iBackColor = context.getResources().getColor(R.color.ListViewEven);

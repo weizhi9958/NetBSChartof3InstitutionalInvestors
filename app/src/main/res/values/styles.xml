@@ -7,4 +7,8 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="buttonStyle">
+        <item name="android:textColor">@drawable/btn_style</item>
+    </style>
+
 </resources>

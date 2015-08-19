@@ -63,7 +63,7 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
         //柱子寬度 = View總寬度 — ( 柱子間距 * 總數量 ) / ( 總數量 + 1 )
         m_iColumnWeight = (int)((sfView.getWidth() - (m_iColumnSpace * STool.s_alDataList.size())) / (STool.s_alDataList.size() + 1));
 
-        m_iTextSize = (int)(m_iColumnWeight / 2.6f); //文字大小
+        m_iTextSize = (int)(m_iColumnWeight / 2.6f); //左方文字大小
 
         //柱子高度 = ( View總高度 - 文字大小 ) / 等分
         m_iColumnHeight = (int)((sfView.getHeight() - m_iTextSize) / m_iColumnSpace);
@@ -81,20 +81,20 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
         canvas.drawPaint(paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
 
-        paint.setTextSize(m_iTextSize);
-
         String strTouchSum = ""; //存放點擊到的合計數值
         int iSize = STool.s_alDataList.size();
 
         STool.sla.changeClikcColor(-1); //預設ListView不變黃色
 
-        for(int i = iSize-1; i >= 0; i--){
+        for(int i = iSize - 1; i >= 0; i--){
             //更新X座標 = 目前座標 + 柱子寬度 + 柱子間距
             m_iNowX += m_iColumnWeight + m_iColumnSpace;
 
             //畫日期 X軸: 目前x軸 + ( 柱寬 / 4 )  Y軸: 9.4個柱高
+            paint.setTextSize(m_iColumnWeight / 2);
+            paint.setTextAlign(Paint.Align.CENTER);
             paint.setColor(Color.WHITE);
-            canvas.drawText(STool.getDayOf(i), m_iNowX + (m_iColumnWeight / 4), m_iColumnHeight * 9.4f, paint);
+            canvas.drawText(STool.getDayOf(i), m_iNowX + (int)(m_iColumnWeight * 0.5f), m_iColumnHeight * 9.4f, paint);
 
 
             paint.setColor(getResources().getColor(R.color.Column_OtherBg));
@@ -142,20 +142,23 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         //畫左方文字
+        paint.setTextSize(m_iTextSize);
+        paint.setTextAlign(Paint.Align.RIGHT);
         ArrayList<Double> alLeftNum = STool.getLeftNumber();
         paint.setColor(Color.WHITE);
         for(int i = 0; i < alLeftNum.size(); i++){
             if(0 == i){
-                canvas.drawText(getResources().getString(R.string.e), m_iColumnWeight * 0.5f, (int)((m_iColumnHeight * (i + 0.5)) + m_iTextSize), paint);
+                canvas.drawText(getResources().getString(R.string.e), m_iColumnWeight, (int)((m_iColumnHeight * (i + 0.7)) + m_iTextSize), paint);
             }
-            canvas.drawText(String.valueOf(alLeftNum.get(i)), 0, (m_iColumnHeight * i) + m_iTextSize, paint);
+            canvas.drawText(String.valueOf(alLeftNum.get(i)), m_iColumnWeight, (m_iColumnHeight * i) + (int)(m_iTextSize * 1.5), paint);
         }
 
         //畫點擊顯示合計文字
         paint.setTextSize(m_iColumnWeight);
+        paint.setTextAlign(Paint.Align.CENTER);
         if(false == "".equals(strTouchSum)) {
             paint.setColor(STool.getTextColor(getContext(), strTouchSum));
-            canvas.drawText(strTouchSum, (int)(sfView.getWidth() / 2.5f), m_iColumnHeight, paint);
+            canvas.drawText(strTouchSum, sfView.getWidth() / 2, m_iColumnHeight * 1.5f, paint);
         }
 
         sfHolder.unlockCanvasAndPost(canvas); //解鎖並顯示畫布

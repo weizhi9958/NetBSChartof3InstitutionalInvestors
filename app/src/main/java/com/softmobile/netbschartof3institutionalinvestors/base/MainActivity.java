@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle(R.string.author_name);
 
         initView();
     }
@@ -108,17 +110,14 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
+            STool.clearAllData();
+            m_bIsTSE = !m_bIsTSE;
+            changBtnColor();
             switch (v.getId()){
                 case R.id.btnTSE:
-                    STool.clearAllData();
-                    m_bIsTSE = true;
-                    changBtnColor();
                     new SGetData(new ListFragment(),new GraphFragment()).execute(STool.TAGURL_TSE);
                     break;
                 case R.id.btnOTC:
-                    STool.clearAllData();
-                    m_bIsTSE = false;
-                    changBtnColor();
                     new SGetData(new ListFragment(),new GraphFragment()).execute(STool.TAGURL_OTC);
                     break;
             }
@@ -194,11 +193,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                     iEt = xpp.next();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            } catch (XmlPullParserException e) {
+
+                STool.addAllArray(); //產生之後必要資料
+
+            } catch (IOException | URISyntaxException | XmlPullParserException e) {
                 e.printStackTrace();
             }
             return null;
@@ -206,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void vd) {
-            STool.addAllArray(); //產生之後必要資料
 
             //替換上下兩個Fragment
             FragmentManager frm = getFragmentManager();
@@ -232,13 +229,9 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }
