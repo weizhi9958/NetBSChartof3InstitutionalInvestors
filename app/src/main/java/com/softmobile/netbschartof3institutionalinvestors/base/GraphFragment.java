@@ -1,45 +1,49 @@
 package com.softmobile.netbschartof3institutionalinvestors.base;
 
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 
 public class GraphFragment extends Fragment{
 
-    SurfaceView sfv;
-    SurfaceHolder sfh;
+    SSurfaceGraph sfv;
+
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_graph, container, false);
-        sfv = (SurfaceView) view.findViewById(R.id.sfvGraph);
-        sfh = sfv.getHolder();
 
+        FrameLayout flSurface = (FrameLayout) view.findViewById(R.id.flSurface);
 
-        final SDrawGraph sdg = new SDrawGraph(getActivity(), sfh, sfv);
-        STool.sdg = sdg;
+        sfv = new SSurfaceGraph(getActivity());
+
+       // final SSurfaceGraph ssfg = new SSurfaceGraph(getActivity(),sfv);
+
+        flSurface.addView(sfv);
+
         sfv.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()){
+
+                switch (event.getAction()) {
+
                     case MotionEvent.ACTION_DOWN:
-                        STool.setNowTouchX((int) event.getX());
-                        sdg.MyDraw();
+                        sfv.MyDraw(-1,(int) event.getX());
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        STool.setNowTouchX((int) event.getX());
-                        sdg.MyDraw();
+                        sfv.MyDraw(-1,(int) event.getX());
                         break;
                 }
                 return true;
@@ -48,4 +52,14 @@ public class GraphFragment extends Fragment{
         return view;
     }
 
+
+    public void drawGraph(int ipos){
+        sfv.MyDraw(ipos,-1);
+    }
+
+    public void setFragmentListener(FragmentListener fml){
+        if(null != sfv) {
+            sfv.setSurfViewListener(fml);
+        }
+    }
 }

@@ -31,10 +31,8 @@ public class STool {
     private static ArrayList<Double> s_alSum = new ArrayList<>();
 
     public static double s_dbMaxNumber = 0;
-    public static int s_iNowTouchX = -1;
-    public static int s_iNowItemPos = -1;
 
-    public static SDrawGraph sdg;
+    public static SSurfaceGraph sdg;
     public static SListAdapter sla;
 
     //小數第二位四捨五入
@@ -108,7 +106,6 @@ public class STool {
         s_alBrk.clear();
         s_alIt.clear();
         s_alSum.clear();
-        s_iNowTouchX = -1;
     }
 
     //設置所有必要資料
@@ -179,11 +176,6 @@ public class STool {
     //取得合計
     public static String getSumOf(int iPos){
         return String.valueOf(s_alSum.get(iPos));
-    }
-
-    //設置碰觸X軸
-    public static void setNowTouchX(int iX){
-        s_iNowTouchX = iX;
     }
 
 

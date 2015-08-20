@@ -14,7 +14,7 @@ import android.view.SurfaceView;
 import java.util.ArrayList;
 
 
-public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
+public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback{
 
     int m_iColumnSpace;  //柱子等分
     int m_iTextSize;     //文字大小
@@ -30,21 +30,22 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
 
     Paint paint;
 
-    SurfaceView sfView;
     SurfaceHolder sfHolder;
 
     Canvas canvas;
 
-    public SDrawGraph(Context context, SurfaceHolder sfh, SurfaceView sfv) {
+    FragmentListener fml;
+
+    public SSurfaceGraph(Context context) {
         super(context);
-        sfHolder = sfh;
-        sfView = sfv;
+        sfHolder = this.getHolder();
         sfHolder.addCallback(this);
+
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        MyDraw();
+        MyDraw(-1,-1);
     }
 
     @Override
@@ -57,16 +58,20 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
 
     }
 
-    public void MyDraw(){
+
+    public void MyDraw(int iListViewPos, int iSurfViewX){
+
         canvas = sfHolder.lockCanvas(); //鎖住畫布
         m_iColumnSpace = 10; //柱子要分成幾等分
         //柱子寬度 = View總寬度 — ( 柱子間距 * 總數量 ) / ( 總數量 + 1 )
-        m_iColumnWeight = (int)((sfView.getWidth() - (m_iColumnSpace * STool.s_alDataList.size())) / (STool.s_alDataList.size() + 1));
+        m_iColumnWeight = (int)((this.getWidth() -
+                (m_iColumnSpace * STool.s_alDataList.size())) /
+                (STool.s_alDataList.size() + 1));
 
         m_iTextSize = (int)(m_iColumnWeight / 2.6f); //左方文字大小
 
         //柱子高度 = ( View總高度 - 文字大小 ) / 等分
-        m_iColumnHeight = (int)((sfView.getHeight() - m_iTextSize) / m_iColumnSpace);
+        m_iColumnHeight = (int)((this.getHeight() - m_iTextSize) / m_iColumnSpace);
 
         m_iNowX = 0; //目前x座標
 
@@ -94,7 +99,10 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
             paint.setTextSize(m_iColumnWeight / 2);
             paint.setTextAlign(Paint.Align.CENTER);
             paint.setColor(Color.WHITE);
-            canvas.drawText(STool.getDayOf(i), m_iNowX + (int)(m_iColumnWeight * 0.5f), m_iColumnHeight * 9.4f, paint);
+            canvas.drawText(STool.getDayOf(i),
+                    m_iNowX + (int)(m_iColumnWeight * 0.5f),
+                    m_iColumnHeight * 9.4f,
+                    paint);
 
 
             paint.setColor(getResources().getColor(R.color.Column_OtherBg));
@@ -120,18 +128,23 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
             }
 
             //依點擊座標 或 點擊ListView 畫黃色柱子 及 黃色ListView背景
-            if((STool.s_iNowTouchX >= m_iNowX && STool.s_iNowTouchX <= m_iNowX + m_iColumnWeight) ||
-                STool.s_iNowItemPos == i){
+            if((iSurfViewX >= m_iNowX && iSurfViewX <= m_iNowX + m_iColumnWeight) ||
+                iListViewPos == i){
                 paint.setColor(getResources().getColor(R.color.ColumnTouch));
-                strTouchSum = strNowSum;
-                STool.sla.changeClikcColor(i);
 
-                STool.s_iNowTouchX = -1;
-                STool.s_iNowItemPos = -1;
+                strTouchSum = strNowSum;
+
+                if(null != fml) {
+                    fml.OnListViewClick(i);
+                }
             }
 
             //畫加總柱狀圖  目前x軸, 文字大小 + 4個柱高, 目前x軸 + 柱寬, 文字大小 + ( 柱高 * ( 4 + 所佔比例 ) )
-            Rect rt = new Rect(m_iNowX, m_iTextSize + (m_iColumnHeight * 4), m_iNowX + m_iColumnWeight, (int) (m_iTextSize + (m_iColumnHeight * (4 + -m_dbProportion))));
+            Rect rt = new Rect(m_iNowX,
+                    m_iTextSize + (m_iColumnHeight * 4),
+                    m_iNowX + m_iColumnWeight,
+                    (int) (m_iTextSize + (m_iColumnHeight * (4 + -m_dbProportion))));
+
             canvas.drawRect(rt, paint);
 
             //畫點及連線
@@ -148,9 +161,15 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
         paint.setColor(Color.WHITE);
         for(int i = 0; i < alLeftNum.size(); i++){
             if(0 == i){
-                canvas.drawText(getResources().getString(R.string.e), m_iColumnWeight, (int)((m_iColumnHeight * (i + 0.7)) + m_iTextSize), paint);
+                canvas.drawText(getResources().getString(R.string.e),
+                        m_iColumnWeight,
+                        (int)((m_iColumnHeight * (i + 0.7)) + m_iTextSize),
+                        paint);
             }
-            canvas.drawText(String.valueOf(alLeftNum.get(i)), m_iColumnWeight, (m_iColumnHeight * i) + (int)(m_iTextSize * 1.5), paint);
+            canvas.drawText(String.valueOf(alLeftNum.get(i)),
+                    m_iColumnWeight,
+                    (m_iColumnHeight * i) + (int)(m_iTextSize * 1.5),
+                    paint);
         }
 
         //畫點擊顯示合計文字
@@ -158,7 +177,7 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
         paint.setTextAlign(Paint.Align.CENTER);
         if(false == "".equals(strTouchSum)) {
             paint.setColor(STool.getTextColor(getContext(), strTouchSum));
-            canvas.drawText(strTouchSum, sfView.getWidth() / 2, m_iColumnHeight * 1.5f, paint);
+            canvas.drawText(strTouchSum, this.getWidth() / 2, m_iColumnHeight * 1.5f, paint);
         }
 
         sfHolder.unlockCanvasAndPost(canvas); //解鎖並顯示畫布
@@ -183,4 +202,9 @@ public class SDrawGraph extends SurfaceView implements SurfaceHolder.Callback {
 
         canvas.drawCircle(m_iNowXY[0], m_iNowXY[1], m_iColumnWeight / 10, paint);
     }
+
+    public void setSurfViewListener(FragmentListener fml){
+        this.fml = fml;
+    }
+
 }

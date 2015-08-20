@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -33,7 +32,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     boolean m_bIsTSE = true; //目前是哪個按鈕
 
@@ -45,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
     Button btnTSE;
     Button btnOTC;
 
-    ListFragment listFragment;
-    GraphFragment graphFragment;
 
     ProgressDialog pgdDialog;
 
@@ -57,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
         setTitle(R.string.author_name);
 
         initView();
+
+        STool.clearAllData();
+        //撈資料
+        new SGetData(new ListFragment(),new GraphFragment()).execute(STool.TAGURL_TSE);
     }
 
     //螢幕翻轉時
@@ -71,10 +72,16 @@ public class MainActivity extends AppCompatActivity {
             //最外層layout改為水平
             llOuter.setOrientation(LinearLayout.HORIZONTAL);
             //比重設為1.0f
-            llBotOuter.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1.0f));
+            llBotOuter.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    1.0f));
         }else{
             llOuter.setOrientation(LinearLayout.VERTICAL);
-            llBotOuter.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 2.0f));
+            llBotOuter.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    2.0f));
         }
 
         //重畫SurfaceView
@@ -96,15 +103,10 @@ public class MainActivity extends AppCompatActivity {
         btnTSE.setOnClickListener(new SBtnOnClickListener());
         btnOTC.setOnClickListener(new SBtnOnClickListener());
 
-        listFragment  = new ListFragment();
-        graphFragment = new GraphFragment();
 
-        STool.clearAllData();
         changBtnColor();
-
-        //撈資料
-        new SGetData(new ListFragment(),new GraphFragment()).execute(STool.TAGURL_TSE);
     }
+
 
     class SBtnOnClickListener implements View.OnClickListener{
 
@@ -113,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
             STool.clearAllData();
             m_bIsTSE = !m_bIsTSE;
             changBtnColor();
+
             switch (v.getId()){
                 case R.id.btnTSE:
                     new SGetData(new ListFragment(),new GraphFragment()).execute(STool.TAGURL_TSE);
@@ -146,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
             pgdDialog = new ProgressDialog(MainActivity.this);
             pgdDialog.setCancelable(false);
             pgdDialog.show();
+
         }
 
         @Override
@@ -212,6 +216,22 @@ public class MainActivity extends AppCompatActivity {
             ft.replace(R.id.llTop, graphFragment);
             ft.commit();
             frm.executePendingTransactions();
+
+
+            listFragment.setOnListViewClickListener(new FragmentListener() {
+                @Override
+                public void OnListViewClick(int iPos) {
+                    graphFragment.drawGraph(iPos);
+                }
+
+            });
+
+            graphFragment.setFragmentListener(new FragmentListener() {
+                @Override
+                public void OnListViewClick(int iPos) {
+                    listFragment.setListItemBackColor(iPos);
+                }
+            });
 
             pgdDialog.dismiss();
         }
