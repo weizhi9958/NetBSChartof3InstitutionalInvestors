@@ -31,10 +31,14 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
     Paint paint;
 
     SurfaceHolder sfHolder;
+    CallBackGraph callBackGraph;
 
     Canvas canvas;
 
-    FragmentListener fml;
+
+    public interface CallBackGraph{
+        void callBack(int i);
+    }
 
     public SSurfaceGraph(Context context) {
         super(context);
@@ -45,7 +49,7 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        MyDraw(-1,-1);
+        MyDraw(-1, -1);
     }
 
     @Override
@@ -55,8 +59,14 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
     }
+
+
+    public void setCallBackGraphListener(CallBackGraph callBackGraph){
+        this.callBackGraph = callBackGraph;
+    }
+
+
 
 
     public void MyDraw(int iListViewPos, int iSurfViewX){
@@ -65,8 +75,8 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
         m_iColumnSpace = 10; //柱子要分成幾等分
         //柱子寬度 = View總寬度 — ( 柱子間距 * 總數量 ) / ( 總數量 + 1 )
         m_iColumnWeight = (int)((this.getWidth() -
-                (m_iColumnSpace * STool.s_alDataList.size())) /
-                (STool.s_alDataList.size() + 1));
+                (m_iColumnSpace * SData.s_alDataList.size())) /
+                (SData.s_alDataList.size() + 1));
 
         m_iTextSize = (int)(m_iColumnWeight / 2.6f); //左方文字大小
 
@@ -87,9 +97,12 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
 
         String strTouchSum = ""; //存放點擊到的合計數值
-        int iSize = STool.s_alDataList.size();
+        int iSize = SData.s_alDataList.size();
 
-        STool.sla.changeClikcColor(-1); //預設ListView不變黃色
+//        STool.sla.changeClikcColor(-1); //預設ListView不變黃色
+        if(null != callBackGraph) {
+            callBackGraph.callBack(-1);
+        }
 
         for(int i = iSize - 1; i >= 0; i--){
             //更新X座標 = 目前座標 + 柱子寬度 + 柱子間距
@@ -99,7 +112,7 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
             paint.setTextSize(m_iColumnWeight / 2);
             paint.setTextAlign(Paint.Align.CENTER);
             paint.setColor(Color.WHITE);
-            canvas.drawText(STool.getDayOf(i),
+            canvas.drawText(SData.getDay(i),
                     m_iNowX + (int)(m_iColumnWeight * 0.5f),
                     m_iColumnHeight * 9.4f,
                     paint);
@@ -116,7 +129,7 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
             Rect r = new Rect(m_iNowX, m_iTextSize, m_iNowX + m_iColumnWeight, m_iColumnHeight * 9);
             canvas.drawRect(r, paint);
 
-            String strNowSum = STool.getSumOf(i); //存放目前Sum值
+            String strNowSum = SData.getSum(i); //存放目前Sum值
             //計算目前總數佔最大值中的比例
             m_dbProportion = STool.getProportion(Double.parseDouble(strNowSum));
 
@@ -134,9 +147,10 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
 
                 strTouchSum = strNowSum;
 
-                if(null != fml) {
-                    fml.OnListViewClick(i);
+                if(null != callBackGraph){
+                    callBackGraph.callBack(i);
                 }
+
             }
 
             //畫加總柱狀圖  目前x軸, 文字大小 + 4個柱高, 目前x軸 + 柱寬, 文字大小 + ( 柱高 * ( 4 + 所佔比例 ) )
@@ -148,9 +162,9 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
             canvas.drawRect(rt, paint);
 
             //畫點及連線
-            drawPointAndLine(STool.getQfiiOf(i), m_iLastQfiiXY, getResources().getColor(R.color.PaintRed));
-            drawPointAndLine(STool.getBrkOf(i), m_iLastBrkXY, getResources().getColor(R.color.PaintOrange));
-            drawPointAndLine(STool.getItOf(i), m_iLastItXY, getResources().getColor(R.color.PaintGreen));
+            drawPointAndLine(SData.getQfii(i), m_iLastQfiiXY, getResources().getColor(R.color.PaintRed));
+            drawPointAndLine(SData.getBrk(i), m_iLastBrkXY, getResources().getColor(R.color.PaintOrange));
+            drawPointAndLine(SData.getIt(i), m_iLastItXY, getResources().getColor(R.color.PaintGreen));
 
         }
 
@@ -203,8 +217,5 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
         canvas.drawCircle(m_iNowXY[0], m_iNowXY[1], m_iColumnWeight / 10, paint);
     }
 
-    public void setSurfViewListener(FragmentListener fml){
-        this.fml = fml;
-    }
 
 }

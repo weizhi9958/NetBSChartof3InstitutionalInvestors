@@ -28,7 +28,7 @@ public class SListAdapter extends BaseAdapter{
 
     @Override
     public int getCount() {
-        return STool.s_alDataList.size();
+        return SData.s_alDataList.size();
     }
 
     @Override
@@ -81,11 +81,11 @@ public class SListAdapter extends BaseAdapter{
         }
 
         //設置每個TextView文字
-        viewHold.tvDate.setText(STool.getMonth(position) + "/" + STool.getDayOf(position));
-        viewHold.tvQfiiNet.setText(STool.getQfiiOf(position));
-        viewHold.tvBrkNet.setText(STool.getBrkOf(position));
-        viewHold.tvItNet.setText(STool.getItOf(position));
-        viewHold.tvSum.setText(STool.getSumOf(position));
+        viewHold.tvDate.setText(SData.getMonth(position) + "/" + SData.getDay(position));
+        viewHold.tvQfiiNet.setText(SData.getQfii(position));
+        viewHold.tvBrkNet.setText(SData.getBrk(position));
+        viewHold.tvItNet.setText(SData.getIt(position));
+        viewHold.tvSum.setText(SData.getSum(position));
         viewHold.llListBack.setBackgroundColor(iBackColor);
 
         //依正負值判斷TextView顏色

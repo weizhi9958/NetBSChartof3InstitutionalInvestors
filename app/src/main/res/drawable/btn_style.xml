@@ -19,9 +19,7 @@
             <solid android:color="#808080" />
             <!-- corners：圆角 -->
             <corners android:radius="5dip" />
-            <!-- padding：内边距 -->
-            <padding android:bottom="10dp" android:left="10dp" android:right="10dp" android:top="10dp" />
-        </shape>
+            </shape>
     </item>
 
     <!-- 按钮正常时的样式 -->
@@ -32,8 +30,6 @@
             <solid android:color="#404040" />
             <!-- corners：圆角 -->
             <corners android:radius="5dip" />
-            <!-- padding：内边距 -->
-            <padding android:bottom="10dp" android:left="10dp" android:right="10dp" android:top="10dp" />
-        </shape>
+            </shape>
     </item>
 </selector>

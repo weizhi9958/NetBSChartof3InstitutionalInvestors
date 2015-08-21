@@ -1,7 +1,5 @@
 package com.softmobile.netbschartof3institutionalinvestors.base;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -12,10 +10,13 @@ import android.util.Xml;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -44,6 +45,9 @@ public class MainActivity extends AppCompatActivity{
     Button btnTSE;
     Button btnOTC;
 
+    SSurfaceGraph sfvMyGraph;
+    ListView lvData;
+    SListAdapter lvAdapter;
 
     ProgressDialog pgdDialog;
 
@@ -55,9 +59,9 @@ public class MainActivity extends AppCompatActivity{
 
         initView();
 
-        STool.clearAllData();
+        SData.clearAllData();
         //撈資料
-        new SGetData(new ListFragment(),new GraphFragment()).execute(STool.TAGURL_TSE);
+        new SGetData().execute(SData.TAGURL_TSE);
     }
 
     //螢幕翻轉時
@@ -84,25 +88,30 @@ public class MainActivity extends AppCompatActivity{
                     2.0f));
         }
 
-        //重畫SurfaceView
-        FragmentManager frm = getFragmentManager();
-        FragmentTransaction ft = frm.beginTransaction();
-        ft.replace(R.id.llTop, new GraphFragment());
-        ft.commit();
-        frm.executePendingTransactions();
+        createGraphView();
+
     }
 
+
     private void initView(){
-        llOuter    = (LinearLayout) findViewById(R.id.llOuter);
-        llTop      = (LinearLayout) findViewById(R.id.llTop);
-        llBot      = (LinearLayout) findViewById(R.id.llBot);
-        llBotOuter = (LinearLayout) findViewById(R.id.llBotOuter);
-        btnTSE     = (Button) findViewById(R.id.btnTSE);
-        btnOTC     = (Button) findViewById(R.id.btnOTC);
+        llOuter      = (LinearLayout) findViewById(R.id.llOuter);
+        llTop        = (LinearLayout) findViewById(R.id.llTop);
+        llBot        = (LinearLayout) findViewById(R.id.llBot);
+        llBotOuter   = (LinearLayout) findViewById(R.id.llBotOuter);
+        btnTSE       = (Button) findViewById(R.id.btnTSE);
+        btnOTC       = (Button) findViewById(R.id.btnOTC);
+        lvData       = (ListView) findViewById(R.id.lvData);
 
         btnTSE.setOnClickListener(new SBtnOnClickListener());
         btnOTC.setOnClickListener(new SBtnOnClickListener());
 
+        lvData.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                lvAdapter.changeClikcColor(position);
+                sfvMyGraph.MyDraw(position, -1);
+            }
+        });
 
         changBtnColor();
     }
@@ -112,16 +121,16 @@ public class MainActivity extends AppCompatActivity{
 
         @Override
         public void onClick(View v) {
-            STool.clearAllData();
+            SData.clearAllData();
             m_bIsTSE = !m_bIsTSE;
             changBtnColor();
 
             switch (v.getId()){
                 case R.id.btnTSE:
-                    new SGetData(new ListFragment(),new GraphFragment()).execute(STool.TAGURL_TSE);
+                    new SGetData().execute(SData.TAGURL_TSE);
                     break;
                 case R.id.btnOTC:
-                    new SGetData(new ListFragment(),new GraphFragment()).execute(STool.TAGURL_OTC);
+                    new SGetData().execute(SData.TAGURL_OTC);
                     break;
             }
         }
@@ -134,14 +143,6 @@ public class MainActivity extends AppCompatActivity{
 
 
    private class SGetData extends AsyncTask<String, Void, Void> {
-
-       ListFragment listFragment = null;
-       GraphFragment graphFragment = null;
-
-        private SGetData(ListFragment lf, GraphFragment gf){
-            this.listFragment = lf;
-            this.graphFragment = gf;
-        }
 
         @Override
         protected void onPreExecute() {
@@ -173,25 +174,25 @@ public class MainActivity extends AppCompatActivity{
                     switch (iEt){
                         case XmlPullParser.START_TAG:
                             strName = xpp.getName();
-                            if(strName.equals(STool.TAG_SUM)){
+                            if(strName.equals(SData.TAG_SUM)){
                                 map = new HashMap<String, String>();
                             }
-                            if(strName.equals(STool.TAG_QFII)){
+                            if(strName.equals(SData.TAG_QFII)){
                                 map.put(strName, xpp.nextText());
                             }
-                            if(strName.equals(STool.TAG_BRK)){
+                            if(strName.equals(SData.TAG_BRK)){
                                 map.put(strName, xpp.nextText());
                             }
-                            if(strName.equals(STool.TAG_IT)){
+                            if(strName.equals(SData.TAG_IT)){
                                 map.put(strName, xpp.nextText());
                             }
-                            if(strName.equals(STool.TAG_DATE)) {
+                            if(strName.equals(SData.TAG_DATE)) {
                                 map.put(strName, xpp.nextText());
                             }
                             break;
                         case XmlPullParser.END_TAG:
-                            if(xpp.getName().equals(STool.TAG_SUM)){
-                                STool.s_alDataList.add(map);
+                            if(xpp.getName().equals(SData.TAG_SUM)){
+                                SData.s_alDataList.add(map);
                             }
                             break;
                     }
@@ -209,32 +210,45 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(Void vd) {
 
-            //替換上下兩個Fragment
-            FragmentManager frm = getFragmentManager();
-            FragmentTransaction ft = frm.beginTransaction();
-            ft.replace(R.id.llBot, listFragment);
-            ft.replace(R.id.llTop, graphFragment);
-            ft.commit();
-            frm.executePendingTransactions();
-
-
-            listFragment.setOnListViewClickListener(new FragmentListener() {
-                @Override
-                public void OnListViewClick(int iPos) {
-                    graphFragment.drawGraph(iPos);
-                }
-
-            });
-
-            graphFragment.setFragmentListener(new FragmentListener() {
-                @Override
-                public void OnListViewClick(int iPos) {
-                    listFragment.setListItemBackColor(iPos);
-                }
-            });
+            lvAdapter = new SListAdapter(MainActivity.this);
+            lvData.setAdapter(lvAdapter);
 
             pgdDialog.dismiss();
+
+            createGraphView();
+
+
         }
+    }
+
+    public void createGraphView(){
+        llTop.removeAllViews();
+        sfvMyGraph = new SSurfaceGraph(MainActivity.this);
+        llTop.addView(sfvMyGraph);
+
+
+        sfvMyGraph.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+
+                    case MotionEvent.ACTION_DOWN:
+                        sfvMyGraph.MyDraw(-1, (int) event.getX());
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        sfvMyGraph.MyDraw(-1, (int) event.getX());
+                        break;
+                }
+                return true;
+            }
+        });
+
+        sfvMyGraph.setCallBackGraphListener(new SSurfaceGraph.CallBackGraph() {
+            @Override
+            public void callBack(int i) {
+                lvAdapter.changeClikcColor(i);
+            }
+        });
     }
 
     @Override
