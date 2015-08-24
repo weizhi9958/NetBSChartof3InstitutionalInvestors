@@ -18,6 +18,11 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar;
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
+import com.nhaarman.listviewanimations.appearance.simple.SwingRightInAnimationAdapter;
+import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -41,15 +46,17 @@ public class MainActivity extends AppCompatActivity{
     LinearLayout llTop; //SurfaceView的layout
     LinearLayout llBotOuter; //下層最外層
     LinearLayout llBot; //ListView的layout
+    LinearLayout llProgress; //loading
 
     Button btnTSE;
     Button btnOTC;
 
     SSurfaceGraph sfvMyGraph;
-    ListView lvData;
-    SListAdapter lvAdapter;
+    DynamicListView dyListView;
+    //ListView lvData;
+    SListAdapter myAdapter;
 
-    ProgressDialog pgdDialog;
+    CircleProgressBar progressWithoutBg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +67,7 @@ public class MainActivity extends AppCompatActivity{
         initView();
 
         SData.clearAllData();
+
         //撈資料
         new SGetData().execute(SData.TAGURL_TSE);
     }
@@ -98,17 +106,22 @@ public class MainActivity extends AppCompatActivity{
         llTop        = (LinearLayout) findViewById(R.id.llTop);
         llBot        = (LinearLayout) findViewById(R.id.llBot);
         llBotOuter   = (LinearLayout) findViewById(R.id.llBotOuter);
+        llProgress   = (LinearLayout) findViewById(R.id.llProgress);
         btnTSE       = (Button) findViewById(R.id.btnTSE);
         btnOTC       = (Button) findViewById(R.id.btnOTC);
-        lvData       = (ListView) findViewById(R.id.lvData);
+       // lvData       = (ListView) findViewById(R.id.lvData);
+        dyListView   = (DynamicListView) findViewById(R.id.dylistview);
+        progressWithoutBg = (CircleProgressBar) findViewById(R.id.progressWithoutBg);
+
+        progressWithoutBg.setColorSchemeResources(R.color.ListViewDivider);
 
         btnTSE.setOnClickListener(new SBtnOnClickListener());
         btnOTC.setOnClickListener(new SBtnOnClickListener());
 
-        lvData.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        dyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                lvAdapter.changeClikcColor(position);
+        //        mainAdapter.changeClikcColor(position);
                 sfvMyGraph.MyDraw(position, -1);
             }
         });
@@ -147,14 +160,13 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pgdDialog = new ProgressDialog(MainActivity.this);
-            pgdDialog.setCancelable(false);
-            pgdDialog.show();
+            llProgress.setVisibility(View.VISIBLE);
 
         }
 
         @Override
         protected Void doInBackground(String... params) {
+
             try {
                 URI uri = new URI(params[0]);
                 HttpClient hc = new DefaultHttpClient();
@@ -198,8 +210,8 @@ public class MainActivity extends AppCompatActivity{
                     }
                     iEt = xpp.next();
                 }
-
                 STool.addAllArray(); //產生之後必要資料
+
 
             } catch (IOException | URISyntaxException | XmlPullParserException e) {
                 e.printStackTrace();
@@ -210,12 +222,19 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(Void vd) {
 
-            lvAdapter = new SListAdapter(MainActivity.this);
-            lvData.setAdapter(lvAdapter);
+            llProgress.setVisibility(View.INVISIBLE);
 
-            pgdDialog.dismiss();
+             myAdapter = new SListAdapter(MainActivity.this);
+            //mainAdapter = lvAdapter;
+
+            SwingRightInAnimationAdapter animAdapter = new SwingRightInAnimationAdapter(myAdapter);
+
+            animAdapter.setAbsListView(dyListView);
+
+            dyListView.setAdapter(animAdapter);
 
             createGraphView();
+
 
 
         }
@@ -246,7 +265,7 @@ public class MainActivity extends AppCompatActivity{
         sfvMyGraph.setCallBackGraphListener(new SSurfaceGraph.CallBackGraph() {
             @Override
             public void callBack(int i) {
-                lvAdapter.changeClikcColor(i);
+                //myAdapter.changeClikcColor(i);
             }
         });
     }

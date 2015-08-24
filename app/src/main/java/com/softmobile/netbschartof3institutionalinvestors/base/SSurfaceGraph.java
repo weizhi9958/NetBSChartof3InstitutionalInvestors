@@ -91,6 +91,7 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
         m_iNowXY = new int[2];
 
         paint = new Paint();
+        paint.setAntiAlias(true);
         //清除畫板
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         canvas.drawPaint(paint);
