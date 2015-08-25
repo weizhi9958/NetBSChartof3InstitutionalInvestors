@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 public class SData {
 
+    public static final String TAG_TSE    = "TSE";
+    public static final String TAG_OTC    = "OTC";
     public static final String TAGURL_TSE = "http://iwow.systex.com.tw/webService/ThreeCommOverBS_TSE.ashx";
     public static final String TAGURL_OTC = "http://iwow.systex.com.tw/webService/ThreeCommOverBS_OTC.ashx";
     public static final String TAG_SUM    = "Symbol";

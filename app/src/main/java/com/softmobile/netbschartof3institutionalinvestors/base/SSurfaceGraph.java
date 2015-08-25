@@ -28,6 +28,8 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
 
     double m_dbProportion; //佔最大值中的比例
 
+    boolean m_bFirstDraw = true;
+
     Paint paint;
 
     SurfaceHolder sfHolder;
@@ -50,6 +52,7 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         MyDraw(-1, -1);
+        m_bFirstDraw = false;
     }
 
     @Override
@@ -100,8 +103,7 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
         String strTouchSum = ""; //存放點擊到的合計數值
         int iSize = SData.s_alDataList.size();
 
-//        STool.sla.changeClikcColor(-1); //預設ListView不變黃色
-        if(null != callBackGraph) {
+        if(null != callBackGraph && false == m_bFirstDraw) {
             callBackGraph.callBack(-1);
         }
 
@@ -109,13 +111,13 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
             //更新X座標 = 目前座標 + 柱子寬度 + 柱子間距
             m_iNowX += m_iColumnWeight + m_iColumnSpace;
 
-            //畫日期 X軸: 目前x軸 + ( 柱寬 / 4 )  Y軸: 9.4個柱高
+            //畫日期 X軸: 目前x軸 + ( 柱寬 / 4 )  Y軸: 9.5個柱高
             paint.setTextSize(m_iColumnWeight / 2);
             paint.setTextAlign(Paint.Align.CENTER);
             paint.setColor(Color.WHITE);
             canvas.drawText(SData.getDay(i),
                     m_iNowX + (int)(m_iColumnWeight * 0.5f),
-                    m_iColumnHeight * 9.4f,
+                    m_iColumnHeight * 9.5f,
                     paint);
 
 

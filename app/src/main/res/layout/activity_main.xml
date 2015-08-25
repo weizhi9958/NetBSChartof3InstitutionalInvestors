@@ -10,32 +10,70 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/btnTSE"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:alpha="1"
-                android:background="@drawable/btn_style"
-                android:text="@string/TSE"
-                android:textColor="@drawable/btn_textcolor" />
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnOTC"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:background="@drawable/btn_style"
-                android:text="@string/OTC"
-                android:textColor="@drawable/btn_textcolor" />
+                <com.dd.CircularProgressButton
+                    android:id="@+id/btnProTSE"
+                    app:cpb_textIdle="@string/TSE"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:layout_margin="5dp"
+                    app:cpb_cornerRadius="3dp"
+                    app:cpb_selectorIdle="@drawable/idle_state_selector" />
 
-        </LinearLayout>
+                <com.dd.CircularProgressButton
+                    android:id="@+id/btnProOTC"
+                    app:cpb_textIdle="@string/OTC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:layout_margin="5dp"
+                    app:cpb_cornerRadius="3dp"
+                    app:cpb_selectorIdle="@drawable/idle_state_selector"/>
+
+                <Button
+                    android:id="@+id/btnTSE"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:alpha="1"
+                    android:background="@drawable/btn_style"
+                    android:text="@string/TSE"
+                    android:textColor="@drawable/btn_textcolor"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btnOTC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/btn_style"
+                    android:text="@string/OTC"
+                    android:textColor="@drawable/btn_textcolor"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/flMask"
+                android:clickable="true"
+                android:visibility="gone">
+
+            </FrameLayout>
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/llOuter"
@@ -63,7 +101,7 @@
                 android:id="@+id/llBotOuter"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
+                android:layout_weight="2.5"
                 android:orientation="vertical">
 
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -189,17 +227,28 @@
 
         <com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar
             android:id="@+id/progressWithoutBg"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_gravity="center"
-            app:mlpb_arrow_height="5dp"
+            app:mlpb_inner_radius="25dp"
+            app:mlpb_arrow_height="10dp"
             app:mlpb_arrow_width="10dp"
             app:mlpb_enable_circle_background="true"
-            app:mlpb_progress_stoke_width="5dp"
+            app:mlpb_progress_stoke_width="3dp"
             app:mlpb_progress_text_visibility="invisible"
             app:mlpb_show_arrow="true" />
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="刷新"
+        android:id="@+id/tvMask"
+        android:layout_gravity="center"
+        android:textColor="@color/Black"
+        android:visibility="gone"/>
 
 
 </FrameLayout>

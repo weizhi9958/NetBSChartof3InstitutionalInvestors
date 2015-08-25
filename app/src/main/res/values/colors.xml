@@ -23,5 +23,8 @@
     <color name="PaintGreen">#00FF00</color>
 
     <color name="ColumnTouch">#FFDA03</color>
-    
+
+    <color name="BtnDefo">#005393</color>
+    <color name="BtnFalse">#46B0FF</color>
+    <color name="BtnPressd">#0082E5</color>
 </resources>
