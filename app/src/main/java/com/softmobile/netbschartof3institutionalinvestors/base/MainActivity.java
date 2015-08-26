@@ -1,6 +1,9 @@
 package com.softmobile.netbschartof3institutionalinvestors.base;
 
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -51,17 +54,16 @@ public class MainActivity extends AppCompatActivity{
     LinearLayout llBotOuter; //下層最外層
     LinearLayout llBot; //ListView的layout
     LinearLayout llProgress; //loading
-    FrameLayout  flMask;
+    FrameLayout  flMask; //按鈕遮罩
     TextView tvMask;
 
     CircularProgressButton btnProTSE;
     CircularProgressButton btnProOTC;
+    CircleProgressBar progressBg;
 
     SSurfaceGraph sfvMyGraph;
     DynamicListView dyListView;
     SListAdapter myAdapter;
-
-    CircleProgressBar progressBg;
 
     Thread thread;
 
@@ -103,32 +105,12 @@ public class MainActivity extends AppCompatActivity{
                 m_bIsTSE = savedInstanceState.getBoolean("Btn");
             }else{
                 //判斷是否有網路
-                if (true == STool.censorInternet(MainActivity.this)){
-                    //有網路
-                    SData.clearAllData();
-                    new SGetData(SData.TAG_TSE).execute(SData.TAGURL_TSE);
-                }else{
-                    //無網路
-                    llProgress.setVisibility(View.VISIBLE);
-                    tvMask.setVisibility(View.VISIBLE);
-                    Toast.makeText(MainActivity.this, R.string.internet_error, Toast.LENGTH_SHORT).show();
-                }
+                censorInternet(SData.TAG_TSE, SData.TAGURL_TSE);
             }
-
         }else{
             //判斷是否有網路
-            if (true == STool.censorInternet(MainActivity.this)){
-                //有網路
-                SData.clearAllData();
-                new SGetData(SData.TAG_TSE).execute(SData.TAGURL_TSE);
-            }else{
-                //無網路
-                llProgress.setVisibility(View.VISIBLE);
-                tvMask.setVisibility(View.VISIBLE);
-                Toast.makeText(MainActivity.this, R.string.internet_error, Toast.LENGTH_SHORT).show();
-            }
+            censorInternet(SData.TAG_TSE, SData.TAGURL_TSE);
         }
-
         changeBtnColor();
     }
 
@@ -146,32 +128,26 @@ public class MainActivity extends AppCompatActivity{
         progressBg = (CircleProgressBar) findViewById(R.id.progressWithoutBg);
 
         progressBg.setColorSchemeResources(R.color.ListViewDivider);
-        
+
+        //監聽Button Click
         btnProTSE.setOnClickListener(new SBtnOnClickListener());
         btnProOTC.setOnClickListener(new SBtnOnClickListener());
 
+        //監聽ListView Clikc
         dyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                myAdapter.changeClikcColor(position);
+                myAdapter.changeClickColor(position);
                 sfvMyGraph.MyDraw(position, -1);
             }
         });
 
+        //監聽刷新按鈕
         tvMask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //判斷是否有網路
-                if (true == STool.censorInternet(MainActivity.this)){
-                    //有網路
-                    SData.clearAllData();
-                    new SGetData(SData.TAG_TSE).execute(SData.TAGURL_TSE);
-                }else{
-                    //無網路
-                    llProgress.setVisibility(View.VISIBLE);
-                    tvMask.setVisibility(View.VISIBLE);
-                    Toast.makeText(MainActivity.this, R.string.internet_error, Toast.LENGTH_LONG).show();
-                }
+                censorInternet(SData.TAG_TSE, SData.TAGURL_TSE);
             }
         });
 
@@ -184,36 +160,24 @@ public class MainActivity extends AppCompatActivity{
             switch (v.getId()){
                 case R.id.btnProTSE:
                     changeBtnColor();
-                    startGetData(SData.TAG_TSE, SData.TAGURL_TSE);
+                    censorInternet(SData.TAG_TSE, SData.TAGURL_TSE);
                     break;
                 case R.id.btnProOTC:
                     changeBtnColor();
-                    startGetData(SData.TAG_OTC, SData.TAGURL_OTC);
+                    censorInternet(SData.TAG_OTC, SData.TAGURL_OTC);
                     break;
             }
         }
     }
 
+    //修改按鈕顏色及開關
     private void changeBtnColor(){
-        if(btnProTSE.getProgress() == 0 && btnProOTC.getProgress() == 0) {
-            m_bIsTSE = !m_bIsTSE;
-            btnProTSE.setEnabled(!m_bIsTSE);
-            btnProOTC.setEnabled(m_bIsTSE);
-        }
+        m_bIsTSE = !m_bIsTSE;
+        btnProTSE.setEnabled(!m_bIsTSE);
+        btnProOTC.setEnabled(m_bIsTSE);
     }
 
-    private void startGetData(String strBtn, String strURL){
-        if (true == STool.censorInternet(MainActivity.this)){
-            if(btnProTSE.getProgress() == 0 && btnProOTC.getProgress() == 0) {
-                new SGetData(strBtn).execute(strURL);
-            }
-        }else{
-            llProgress.setVisibility(View.VISIBLE);
-            tvMask.setVisibility(View.VISIBLE);
-            Toast.makeText(MainActivity.this, R.string.internet_error, Toast.LENGTH_SHORT).show();
-        }
-    }
-
+    //撈資料 & 解析XML
     private class SGetData extends AsyncTask<String, Void, Void> {
 
         private String strBtn;
@@ -225,8 +189,8 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            llProgress.setVisibility(View.VISIBLE);
-            flMask.setVisibility(View.VISIBLE);
+            llProgress.setVisibility(View.VISIBLE); //顯示進度條
+            flMask.setVisibility(View.VISIBLE); //顯示按鈕透明遮罩
             dyListView.setAdapter(null);
         }
 
@@ -293,11 +257,12 @@ public class MainActivity extends AppCompatActivity{
             thread = new SThread(strBtn);
             thread.start();
 
-            llProgress.setVisibility(View.INVISIBLE);
-            tvMask.setVisibility(View.GONE);
+            llProgress.setVisibility(View.GONE); //隱藏進度條
+            tvMask.setVisibility(View.GONE); //隱藏刷新文字
         }
     }
 
+    //產生ListView
     private void createListView(){
         myAdapter = new SListAdapter(MainActivity.this);
 
@@ -307,11 +272,13 @@ public class MainActivity extends AppCompatActivity{
         dyListView.setAdapter(animAdapter);
     }
 
+    //產生圖表
     private void createGraphView(){
         llTop.removeAllViews();
         sfvMyGraph = new SSurfaceGraph(MainActivity.this);
         llTop.addView(sfvMyGraph);
 
+        //Touch監聽
         sfvMyGraph.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -327,14 +294,16 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+        //監聽畫圖時的callBack
         sfvMyGraph.setCallBackGraphListener(new SSurfaceGraph.CallBackGraph() {
             @Override
             public void callBack(int i) {
-                myAdapter.changeClikcColor(i);
+                myAdapter.changeClickColor(i);
             }
         });
     }
 
+    //修改按鈕進度條
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -345,6 +314,7 @@ public class MainActivity extends AppCompatActivity{
                 btnProTSE.setProgress(msg.getData().getInt("end"));
             }
 
+            //如果收到此數值 將按鈕上方透明遮罩關掉
             if(400 == msg.getData().getInt("delay")){
                 flMask.setVisibility(View.GONE);
             }
@@ -369,7 +339,8 @@ public class MainActivity extends AppCompatActivity{
 
                 for(int i = 1; i <= 100; i++) {
                     Thread.sleep(5);
-                    if(i == 2){
+                    //因按鈕變化有動畫 此sleep是為了讓動畫結束在開始跑進度條
+                    if(2 == i){
                         Thread.sleep(550);
                     }
                     countBundle = new Bundle();
@@ -382,6 +353,7 @@ public class MainActivity extends AppCompatActivity{
                         msg.setData(countBundle);
                         handler.sendMessage(msg);
 
+                        //同起始動畫 延遲些許時間在將遮罩關掉
                         Thread.sleep(400);
                         countBundle.putInt("delay", 400);
                         msg = new Message();
@@ -393,6 +365,7 @@ public class MainActivity extends AppCompatActivity{
                     msg.setData(countBundle);
                     handler.sendMessage(msg);
                 }
+
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
@@ -401,6 +374,7 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        //轉向時儲存必要資料
         outState.putSerializable("Data", SData.s_alDataList);
         outState.putBoolean("Btn", !m_bIsTSE);
         super.onSaveInstanceState(outState);
@@ -409,13 +383,12 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onPause() {
         super.onPause();
-
+        //停止執行緒
         if (null != thread) {
             if (!thread.isInterrupted()) {
                 thread.interrupt();
             }
         }
-
     }
 
     @Override
@@ -424,6 +397,22 @@ public class MainActivity extends AppCompatActivity{
         btnProTSE.setProgress(0);
         btnProOTC.setProgress(0);
     }
+
+    public void censorInternet(String strBtn, String strURL){
+        ConnectivityManager cManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = cManager.getActiveNetworkInfo();
+        if (info != null && info.isAvailable()){
+            //有網路
+            SData.clearAllData();
+            new SGetData(strBtn).execute(strURL);
+        }else{
+            //無網路
+            llProgress.setVisibility(View.VISIBLE); //顯示進度條
+            tvMask.setVisibility(View.VISIBLE);  //顯示刷新文字
+            Toast.makeText(MainActivity.this, R.string.internet_error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

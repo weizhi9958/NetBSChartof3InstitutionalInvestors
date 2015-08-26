@@ -4,7 +4,9 @@ package com.softmobile.netbschartof3institutionalinvestors.base;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -116,17 +118,6 @@ public class STool {
     //取得與最大值相除後比例
     public static double getProportion(double dbNum){
         return (dbNum / SData.s_dbMaxNumber) * 4;
-    }
-
-
-    public static boolean censorInternet(Context context){
-        ConnectivityManager cManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo info = cManager.getActiveNetworkInfo();
-        if (info != null && info.isAvailable()){
-            return true;
-        }else{
-            return false;
-        }
     }
 
 

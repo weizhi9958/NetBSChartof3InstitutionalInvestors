@@ -37,7 +37,6 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
 
     Canvas canvas;
 
-
     public interface CallBackGraph{
         void callBack(int i);
     }
@@ -103,6 +102,7 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
         String strTouchSum = ""; //存放點擊到的合計數值
         int iSize = SData.s_alDataList.size();
 
+        //如果不是第一次執行再回傳-1
         if(null != callBackGraph && false == m_bFirstDraw) {
             callBackGraph.callBack(-1);
         }
@@ -151,7 +151,7 @@ public class SSurfaceGraph extends SurfaceView implements SurfaceHolder.Callback
                 strTouchSum = strNowSum;
 
                 if(null != callBackGraph){
-                    callBackGraph.callBack(i);
+                    callBackGraph.callBack(i); //將目前位置回傳給Activity
                 }
 
             }

@@ -103,7 +103,7 @@ public class SListAdapter extends BaseAdapter{
     }
 
     //修改點擊顏色
-    public void changeClikcColor(int iPos){
+    public void changeClickColor(int iPos){
         m_iTouchPos = iPos;
         notifyDataSetChanged();
     }
