@@ -42,7 +42,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity{
@@ -133,7 +132,7 @@ public class MainActivity extends AppCompatActivity{
         btnProTSE.setOnClickListener(new SBtnOnClickListener());
         btnProOTC.setOnClickListener(new SBtnOnClickListener());
 
-        //監聽ListView Clikc
+        //監聽ListView Click
         dyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -308,7 +307,7 @@ public class MainActivity extends AppCompatActivity{
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
-            if(SData.TAG_TSE == msg.getData().getString("name")){
+            if(SData.TAG_TSE.equals(msg.getData().getString("name"))){
                 btnProOTC.setProgress(msg.getData().getInt("end"));
             }else{
                 btnProTSE.setProgress(msg.getData().getInt("end"));
@@ -325,7 +324,7 @@ public class MainActivity extends AppCompatActivity{
 
         private String strName;
 
-        private SThread(String str){
+        private SThread(String str) {
             this.strName = str;
         }
 
@@ -337,10 +336,10 @@ public class MainActivity extends AppCompatActivity{
                 Bundle countBundle = null;
                 Message msg = null;
 
-                for(int i = 1; i <= 100; i++) {
+                for (int i = 1; i <= 100; i++) {
                     Thread.sleep(5);
                     //因按鈕變化有動畫 此sleep是為了讓動畫結束在開始跑進度條
-                    if(2 == i){
+                    if (2 == i) {
                         Thread.sleep(550);
                     }
                     countBundle = new Bundle();
@@ -348,7 +347,7 @@ public class MainActivity extends AppCompatActivity{
                     countBundle.putInt("end", i);
                     msg = new Message();
 
-                    if(100 == i){
+                    if (100 == i) {
                         countBundle.putInt("end", 0);
                         msg.setData(countBundle);
                         handler.sendMessage(msg);

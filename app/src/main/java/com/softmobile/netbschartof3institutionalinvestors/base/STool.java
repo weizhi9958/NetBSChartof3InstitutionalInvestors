@@ -2,11 +2,7 @@ package com.softmobile.netbschartof3institutionalinvestors.base;
 
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -45,7 +41,7 @@ public class STool {
 
     //設置所有必要資料
     public static void addAllArray(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
         Calendar calendar = Calendar.getInstance();
         Date date;
         double dbQfii;

@@ -10,11 +10,6 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 public class SListAdapter extends BaseAdapter{
 
     private int m_iTouchPos = -1;
