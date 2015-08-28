@@ -2,17 +2,82 @@ package com.softmobile.netbschartof3institutionalinvestors.base;
 
 
 import android.content.Context;
+import android.util.Xml;
 import android.widget.TextView;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 public class STool {
 
+    //取得資料
+    public static String getDataForURL(String strURL) throws URISyntaxException, IOException {
 
+        URI uri = new URI(strURL);
+        HttpClient hc = new DefaultHttpClient();
+        HttpGet hg = new HttpGet();
+
+        hg.setURI(uri);
+        HttpResponse res = hc.execute(hg);
+
+        return EntityUtils.toString(res.getEntity());
+    }
+
+    //解析XML
+    public static void resolveXML(String strRes) throws IOException, XmlPullParserException {
+        XmlPullParser xpp = Xml.newPullParser();
+        InputStream inputs = new ByteArrayInputStream(strRes.getBytes());
+        xpp.setInput(inputs, "utf-8");
+        int iEt = xpp.getEventType();
+        HashMap<String, String> map = null;
+        String strName = null;
+        while (iEt != XmlPullParser.END_DOCUMENT){
+            switch (iEt){
+                case XmlPullParser.START_TAG:
+                    strName = xpp.getName();
+                    if(strName.equals(SData.TAG_SUM)){
+                        map = new HashMap<String, String>();
+                    }
+                    if(strName.equals(SData.TAG_QFII)){
+                        map.put(strName, xpp.nextText());
+                    }
+                    if(strName.equals(SData.TAG_BRK)){
+                        map.put(strName, xpp.nextText());
+                    }
+                    if(strName.equals(SData.TAG_IT)){
+                        map.put(strName, xpp.nextText());
+                    }
+                    if(strName.equals(SData.TAG_DATE)) {
+                        map.put(strName, xpp.nextText());
+                    }
+                    break;
+                case XmlPullParser.END_TAG:
+                    if(xpp.getName().equals(SData.TAG_SUM)){
+                        SData.s_alDataList.add(map);
+                    }
+                    break;
+            }
+            iEt = xpp.next();
+        }
+
+    }
 
     //小數第二位四捨五入
     public static double getRound(double dbNum){
